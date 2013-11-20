@@ -1,0 +1,132 @@
+doctype 5
+html
+  head
+    title= 'MongoCMS'
+    meta(charset="UTF-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge,chrome=1")
+
+    link(rel='stylesheet', href='css/main.css')
+
+body(ontouchstart).clear.md-mode
+    .container
+        #sidebar.column.animate
+            //- Header
+            header.clear
+                .logo.pull-left
+                    <h2>MongoCMS <span>v0.0.1</span></h2>
+
+            //- Navigation Menu
+            ul.clear.documents
+                li.clear
+                  a(href="/").draft
+                    p Whoooi title
+                    span.published.pull-left
+                        | Draft
+                    span.views.pull-right
+                li
+                  a(href="#").draft
+                    p Long live PHP
+                    span.published.pull-left Draft
+                    span.views.pull-right
+                li
+                  a(href="#")
+                    p Sure again why not
+                    span.published.pull-left
+                        | 2 days ago
+                    span.views.pull-right
+                        i.fa.fa-eye
+                        | 1543
+                li
+                  a(href="#")
+                    p Why do titles have to be so long tho?
+                    span.published.pull-left
+                        | 2 months ago
+                    span.views.pull-right
+                        i.fa.fa-eye
+                        | 200
+                li
+                    a(href="#")
+                      p 769768544563783
+                      span.published.pull-left
+                          | 2 months ago
+                      span.views.pull-right
+                          i.fa.fa-eye
+                          | 200
+
+            footer.clear.text-center &copy; 2013<br>Powered by Express & MongoDB
+
+        #main.column
+            header
+                ul.nav.pull-left
+                    li
+                        a(href="#") Documents
+                    li
+                        a(href="#") Configure
+
+            .content-wrapper
+                .breadcrumbs Breadcrumbs
+                .content
+                    .row.clear
+                        .key.pull-left What's up Key
+                        .value.pull-right Hey value
+                    .row.clear
+                        .key.pull-left What's up Key
+                        .value.pull-right Hey value
+
+    .md-overlay
+    .md-content.centered
+        form(id="connect", method="post", action="#").connect
+            p.text-center.title Connect
+
+            .js-float-label-wrapper
+                label(for="host") Host
+                input(type="text", name="host", value="localhost")
+
+            .js-float-label-wrapper
+                label Port
+                input(type="text", name="port", value="27017")
+
+            .js-float-label-wrapper
+                label Database
+                input(type="text", name="database")
+
+            .js-float-label-wrapper
+                label User
+                input(type="text", name="username")
+
+            .js-float-label-wrapper
+                label Pass
+                input(type="text", name="psw")
+
+            select(name="collection", class="collection-list hide", style="width: 100%")
+                option Select Collection
+
+            button(class="btn center connect", type="submit") Connect
+
+
+    script(type='text/template', id="listItemTemplate")
+        a(href="/", data-id!="<%= id %>").draft
+            p <%= title || _id %>
+            span.published.pull-left
+                | Draft
+            span.views.pull-right
+
+    script(type='text/template', id="listItemTemplateEdit").
+        <% _(list).each(function(field) { %>
+            <div class="row clear">
+                <div class="label"><%= field.key %></div>
+                <div class="value" contenteditable="true"><%= field.value %></div>
+            </div>
+        <% }); %>
+
+
+
+    //- script(src='components/jquery/jquery.js')
+    //- script(src='components/underscore/underscore.js')l
+    //- script(src='components/backbone/backbone.js')
+    //- script(src='components/nprogress/nprogress.js')
+    //- script(src='components/socialite/socialite.js')
+    //- script(src='js/namespaces.js')
+    //- script(src='js/helpers.js')
+    script(src='js/MongoCMS.js')
+    //- script(src='http://localhost:35729/livereload.js')

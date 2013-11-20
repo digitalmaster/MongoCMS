@@ -1,0 +1,34 @@
+{
+  "name": "MongoCMS",
+  "version": "0.0.1",
+  "description": "Manage Mongo content",
+  "main": "main.html",
+  "node-remote": "<local>",
+  "window": {
+    "title": "MongoCMS",
+    "position": "center",
+    "toolbar": true,
+    "frame": true,
+    "width": 1200,
+    "height": 800
+  },
+  "dependencies": {
+    "connect": "~2.11.0",
+    "mongodb": "~1.3.19",
+    "mongoskin": ">=0.6.0",
+    "mongojs": "~0.9.6"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-develop": "~0.2.2",
+    "request": "~2.27.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-sass": "~0.5.0",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-autoprefixer": "~0.4.0",
+    "grunt-groundskeeper": "~0.1.6",
+    "grunt-contrib-jade": "~0.8.0",
+    "grunt-contrib-compass": "~0.6.0"
+  }
+}

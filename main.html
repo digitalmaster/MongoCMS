@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MongoCMS</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="css/main.css">
+  </head>
+</html>
+<body ontouchstart class="clear md-mode">
+  <div class="container">
+    <div id="sidebar" class="column animate">
+      <header class="clear">
+        <div class="logo pull-left"><h2>MongoCMS <span>v0.0.1</span></h2></div>
+      </header>
+      <ul class="clear documents">
+        <li class="clear"><a href="/" class="draft">
+            <p>Whoooi title</p><span class="published pull-left">Draft</span><span class="views pull-right"></span></a></li>
+        <li><a href="#" class="draft">
+            <p>Long live PHP</p><span class="published pull-left">Draft</span><span class="views pull-right"></span></a></li>
+        <li><a href="#">
+            <p>Sure again why not</p><span class="published pull-left">2 days ago</span><span class="views pull-right"><i class="fa fa-eye"></i>1543</span></a></li>
+        <li><a href="#">
+            <p>Why do titles have to be so long tho?</p><span class="published pull-left">2 months ago</span><span class="views pull-right"><i class="fa fa-eye"></i>200</span></a></li>
+        <li><a href="#">
+            <p>769768544563783</p><span class="published pull-left">2 months ago</span><span class="views pull-right"><i class="fa fa-eye"></i>200</span></a></li>
+      </ul>
+      <footer class="clear text-center">&copy; 2013<br>Powered by Express & MongoDB</footer>
+    </div>
+    <div id="main" class="column">
+      <header>
+        <ul class="nav pull-left">
+          <li><a href="#">Documents</a></li>
+          <li><a href="#">Configure</a></li>
+        </ul>
+      </header>
+      <div class="content-wrapper">
+        <div class="breadcrumbs">Breadcrumbs</div>
+        <div class="content">
+          <div class="row clear">
+            <div class="key pull-left">What's up Key</div>
+            <div class="value pull-right">Hey value</div>
+          </div>
+          <div class="row clear">
+            <div class="key pull-left">What's up Key</div>
+            <div class="value pull-right">Hey value</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="md-overlay"></div>
+  <div class="md-content centered">
+    <form id="connect" method="post" action="#" class="connect">
+      <p class="text-center title">Connect</p>
+      <div class="js-float-label-wrapper">
+        <label for="host">Host</label>
+        <input type="text" name="host" value="localhost">
+      </div>
+      <div class="js-float-label-wrapper">
+        <label>Port</label>
+        <input type="text" name="port" value="27017">
+      </div>
+      <div class="js-float-label-wrapper">
+        <label>Database</label>
+        <input type="text" name="database">
+      </div>
+      <div class="js-float-label-wrapper">
+        <label>User</label>
+        <input type="text" name="username">
+      </div>
+      <div class="js-float-label-wrapper">
+        <label>Pass</label>
+        <input type="text" name="psw">
+      </div>
+      <select name="collection" style="width: 100%" class="collection-list hide">
+        <option>Select Collection</option>
+      </select>
+      <button type="submit" class="btn center connect">Connect</button>
+    </form>
+  </div>
+  <script type="text/template" id="listItemTemplate"><a href="/" data-id="<%= id %>" class="draft">
+      <p><%= title || _id %></p><span class="published pull-left">Draft</span><span class="views pull-right"></span></a></script>
+  <script type="text/template" id="listItemTemplateEdit">
+    <% _(list).each(function(field) { %>
+        <div class="row clear">
+            <div class="label"><%= field.key %></div>
+            <div class="value" contenteditable="true"><%= field.value %></div>
+        </div>
+    <% }); %>
+    
+    
+    
+  </script>
+  <script src="js/MongoCMS.js"></script>
+</body>

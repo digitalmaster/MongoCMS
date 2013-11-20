@@ -1,0 +1,78 @@
+@include max-screen(995px){
+    #sidebar{
+        left: -220px;
+        z-index: 100000;
+    }
+    .container{
+        padding-left: 0;
+        &.showSidebar{
+            #sidebar{
+                left: 0;
+            }
+            header{
+                left: 220px;
+                z-index:2;
+            }
+            .content{
+                left: 220px;
+                z-index:1;
+            }
+        }
+
+        .content{
+            position: relative;
+        }
+    }
+
+    header{
+        position: fixed;
+        width: 100%;
+        background-color: white;
+        padding: 0;
+        height: 40px;
+
+        .inner{
+            padding: 10px $gutter;
+        }
+        .search{
+            padding: 10px 18px;
+            top: -10px;
+        }
+
+        .title{
+            padding-left: 0;
+            font-size: 22px;
+            a{
+                text-decoration: none;
+                &:hover{ text-decoration: none }
+                display: inline-block;
+            }
+        }
+    }
+
+
+}
+
+@include max-screen(680px){
+    .content{
+        article {
+            .footer{
+                .meta{
+                    float: none;
+                    overflow: hidden;
+                    text-align: center;
+                    > span{
+                        text-align: center;
+                    }
+                }
+                .btn{
+                    float: none;
+                    display: block;
+                    text-align: center;
+                    width: 40%;
+                    margin: 10px auto 0;
+                }
+            }
+        }
+    }
+}

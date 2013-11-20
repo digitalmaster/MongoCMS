@@ -1,0 +1,10 @@
+*.sublime-workspace
+node_modules
+temp
+dist
+.sass-cache
+.tmp
+
+components
+js/MongoCMS.js
+css

@@ -1,0 +1,13 @@
+{
+  "name": "MongoCMS",
+  "version": "0.0.1",
+  "dependencies": {
+    "jquery": "~1.10.2",
+    "backbone": "~1.0.0",
+    "underscore": "~1.5.1",
+    "font-awesome": "~4.0",
+    "moment": "~2.2.1",
+    "nprogress": "~0.1.2",
+    "floatLabel": "https://github.com/m10l/FloatLabel.js.git"
+  }
+}

@@ -1,0 +1,38 @@
+/* ==========================================================================
+   Settings
+   ========================================================================== */
+    $fa-font-path: "../components/font-awesome/fonts";
+
+
+/* ==========================================================================
+   Colors
+   ========================================================================== */
+    $background-main:   #f5f5f5;
+    $text-main:         #808080;
+    $text-secondary:    #16a085; /* green */
+    $flat-green:        $text-secondary;
+    $flat-blue:         #2980b9; /* blue */
+    $flat-orange:       #e74c3c;
+    $flat-red:          #e74c3c;
+    $blue-dark:         #1f2125;
+    $blue-dark-light:   #282b2f;
+
+
+    $gray-darker:            lighten(#000, 13.5%) !default; // #222
+    $gray-dark:              lighten(#000, 20%) !default;   // #333
+    $gray:                   lighten(#000, 33.5%) !default; // #555
+    $gray-light:             lighten(#000, 60%) !default;   // #999
+    $gray-lightish:          lighten(#000, 80%) !default;   // #ccc
+    $gray-lighter:           lighten(#000, 93.5%) !default; // #eee
+
+/* ==========================================================================
+   Tag Colors
+   ========================================================================== */
+    $tag-all: $gray-light;
+    $tag-tips: $flat-green;
+    $tag-tutorials: $flat-blue;
+    $tag-personal: $flat-orange;
+/* ==========================================================================
+   Global Dimensions
+   ========================================================================== */
+    $sidebarWidth: 275px;

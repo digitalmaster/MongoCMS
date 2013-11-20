@@ -1,0 +1,133 @@
+code{
+  margin: 0;
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+  font-size: 90%;
+}
+
+pre {
+  margin: 10px -25px;
+  background-color: $blue-dark-light;
+  padding: 20px;
+  overflow: auto;
+  word-wrap: normal;
+  white-space: pre;
+  code{ display: block }
+}
+
+// Github
+li code,
+p code{
+  margin: 0 2px;
+  padding: 0px 5px;
+  border: 1px solid #ddd;
+  background-color: #f8f8f8;
+  border-radius: 3px;
+}
+
+.pln {
+  color: #f8f7f2;
+}
+@media screen {
+  .str {
+    color: #e6d77a;
+  }
+  .kwd {
+    color: #e85274;
+  }
+  .com {
+    color: #485457;
+  }
+  .typ {
+    color: #f8f7f2;
+  }
+  .lit {
+    color: #b5d93a;
+  }
+  .pun,
+  .opn,
+  .clo {
+    color: #f8f7f2;
+  }
+  .tag {
+    color: #aaa;
+  }
+  .atn {
+    color: #e85274;
+  }
+  .atv {
+    color: #b5d83a;
+  }
+  .dec,
+  .var {
+    color: #f8f7f2;
+  }
+  .fun {
+    color: #e85379;
+  }
+}
+@media print, projection {
+  pre code {
+    background-color: none;
+    display: block;
+    padding: 10px;
+    overflow: visible;
+  }
+  .pln {
+    color: #000;
+  }
+  .str {
+    color: #060;
+  }
+  .kwd {
+    color: #006;
+    font-weight: bold;
+  }
+  .com {
+    color: #600;
+    font-style: italic;
+  }
+  .typ {
+    color: #404;
+    font-weight: bold;
+  }
+  .lit {
+    color: #044;
+  }
+  .pun,
+  .opn,
+  .clo {
+    color: #440;
+  }
+  .tag {
+    color: #006;
+    font-weight: bold;
+  }
+  .atn {
+    color: #404;
+  }
+  .atv {
+    color: #060;
+  }
+}
+
+ol.linenums {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+li.L0,
+li.L1,
+li.L2,
+li.L3,
+li.L5,
+li.L6,
+li.L7,
+li.L8 {
+  list-style-type: none;
+}
+li.L1,
+li.L3,
+li.L5,
+li.L7,
+li.L9 {
+  background: #eee;
+}
