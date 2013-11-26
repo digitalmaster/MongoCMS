@@ -75,7 +75,6 @@ blockquote {
 .small   { font-size: 85%; }
 .x-small { font-size: 80%; }
 .container{
-    overflow: hidden;
     padding-left: $sidebarWidth;
 
     .column{
@@ -111,20 +110,41 @@ blockquote {
         height: $header-height;
         position: fixed;
         z-index: 100;
-        width: 100%;
+        width: calc(100% - 275px);
         background-color: $blue-dark;
-        .logo{
-            width: 275px;
-            height: $header-height;
+
+        .status-pane{
+            width: 150px;
             box-shadow: inset 0px 0px 1px #8F8F8F;
-            h2{
-                padding: 0 20px;
-                color: $gray-lightish;
-                font-weight: normal;
-                span{
-                    font-size: 13px;
-                    color: #27292e;
+            padding: 16px 0;
+            p{
+                text-align: center;
+                margin: 0;
+                &.connection{
+                    color: $flat-green;
                 }
+
+                &.status{
+                    font-size: 14px;
+                    font-weight: 200;
+                    color: #474C52;
+                }
+            }
+        }
+    }
+
+    .logo{
+        width: 275px;
+        background-color: $blue-dark;
+        height: $header-height;
+        box-shadow: inset 0px 0px 1px #8F8F8F;
+        h2{
+            padding: 0 20px;
+            color: $gray-lightish;
+            font-weight: normal;
+            span{
+                font-size: 13px;
+                color: #27292e;
             }
         }
     }
@@ -282,6 +302,30 @@ blockquote {
                 left: 25px;
                 font-weight: bold;
             }
+
+            .value{
+                padding: 5px 0;
+                margin: 5px 0;
+            }
+
+            input.inEdit{
+                border: none;
+
+                &:hover,
+                &:focus{
+                    background-color: $background-main;
+                    transition: background-color 0.5s;
+                }
+
+                &:focus{
+                    border: 1px dotted $gray-lightish;
+                    outline: 0;
+                }
+            }
+
+            input.editing{
+                background-color: #FAFAFA !important;
+            }
         }
     }
 
@@ -334,7 +378,7 @@ blockquote {
 
     // Content
     .md-content{
-        max-width: 400px;
+        width: 340px;
         border: 10px solid rgba(255, 255, 255, 0.1);
         z-index: 147;
         display: none;
@@ -437,6 +481,36 @@ blockquote {
         width: 100%;
         height: 100%;
     }
+}
+
+/*
+  ==========================================================================
+   Embeds
+  ==========================================================================
+*/
+.ace_editor {
+    border: 1px solid lightgray;
+    margin: auto;
+    height: 200px;
+    width: 80%;
+    position: relative !important
+}
+
+.fullScreen .fullScreen-editor{
+    height: auto!important;
+    width: auto!important;
+    border: 0;
+    margin: 0;
+    position: fixed !important;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10000
+}
+
+.fullScreen {
+    overflow: hidden
 }
 
 

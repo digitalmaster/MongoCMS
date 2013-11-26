@@ -61,6 +61,7 @@ module.exports = function (grunt) {
           'components/backbone/backbone.js',
           'components/nprogress/nprogress.js',
           'components/floatLabel/jquery.FloatLabel.js',
+          'components/ace-builds/src-noconflict/ace.js',
           'js/namespaces.js',
           'js/helpers.js',
           'js/main.js',

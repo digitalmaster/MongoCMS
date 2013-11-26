@@ -10,9 +10,7 @@
 <body ontouchstart class="clear md-mode">
   <div class="container">
     <div id="sidebar" class="column animate">
-      <header class="clear">
-        <div class="logo pull-left"><h2>MongoCMS <span>v0.0.1</span></h2></div>
-      </header>
+      <div class="logo pull-left clear"><h2>MongoCMS <span>v0.0.1</span></h2></div>
       <ul class="clear documents">
         <li class="clear"><a href="/" class="draft">
             <p>Whoooi title</p><span class="published pull-left">Draft</span><span class="views pull-right"></span></a></li>
@@ -28,11 +26,15 @@
       <footer class="clear text-center">&copy; 2013<br>Powered by Express & MongoDB</footer>
     </div>
     <div id="main" class="column">
-      <header>
+      <header class="clear">
         <ul class="nav pull-left">
           <li><a href="#">Documents</a></li>
           <li><a href="#">Configure</a></li>
         </ul>
+        <div class="status-pane pull-right">
+          <p class="connection">Connected</p>
+          <p class="status">Idle</p>
+        </div>
       </header>
       <div class="content-wrapper">
         <div class="breadcrumbs">Breadcrumbs</div>
@@ -71,7 +73,7 @@
       </div>
       <div class="js-float-label-wrapper">
         <label>Pass</label>
-        <input type="text" name="psw">
+        <input type="password" name="psw">
       </div>
       <select name="collection" style="width: 100%" class="collection-list hide">
         <option>Select Collection</option>
@@ -80,17 +82,30 @@
     </form>
   </div>
   <script type="text/template" id="listItemTemplate"><a href="/" data-id="<%= id %>" class="draft">
-      <p><%= title || _id %></p><span class="published pull-left">Draft</span><span class="views pull-right"></span></a></script>
+      <p class="title"><%= title || _id %></p><span class="published pull-left">Draft</span><span class="views pull-right"></span></a></script>
   <script type="text/template" id="listItemTemplateEdit">
     <% _(list).each(function(field) { %>
-        <div class="row clear">
-            <div class="label"><%= field.key %></div>
-            <div class="value" contenteditable="true"><%= field.value %></div>
-        </div>
-    <% }); %>
     
+        <% if( field.key != '_id') { %>
+            <div class="row clear ">
+                <div class="label"><%= field.key %></div>
+                <% if(field.type == 1){ %>
+                    <textarea data-editor="html" rows="15" class="value inEdit" data-key="<%= field.key %>"><%= field.value %></textarea>
+                <% }else{ %>
+                    <input class="value inEdit" data-key="<%= field.key %>" value="<%= field.value %>"/>
+                <% } %>
+            </div>
+        <% }else { %>
+            <div class="row clear">
+                <div class="label"><%= field.key %></div>
+                <p><%= field.value %><p/>
+            </div>
+        <% } %>
+        
+    <% }); %>
     
     
   </script>
   <script src="js/MongoCMS.js"></script>
+  <script src="http://localhost:35729/livereload.js"></script>
 </body>

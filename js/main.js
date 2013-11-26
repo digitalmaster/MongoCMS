@@ -10,13 +10,35 @@
     */
     App.Models.Doc = BB.Model.extend({
         initialize: function(){
-            console.log('model initialized');
+            this.on('change', this.save);
+            this.on('change:title', this.onTitleChange);
+        },
+
+        save: function(model){
+            var id = model.get('_id').toString();
+            App.eve.trigger('status:update', 'Saving..');
+            App.db.client.update(
+                { _id: App.mongojs.ObjectId(id) },
+                { $set: this.changed },
+                {},
+                function(err){
+                    if(err) throw err;
+
+                    App.eve.trigger('status:update', 'Saved', true);
+                }
+            );
+        },
+
+        onTitleChange: function(model){
+            var id = model.get('_id').toString();
+            var newTitle = model.get('title');
+            App.Views.docList.$el.find('*[data-id="' + id + '"]').find('.title').text(newTitle);
         }
     });
 
     /*
       ==========================================================================
-        View: Document
+        View: Sidebar List Item
       ==========================================================================
     */
     App.Views.DocListItem = BB.View.extend({
@@ -38,13 +60,14 @@
                 return currentId == model.get('_id').toString();
             });
 
-            var docEdit = new App.Views.DocEdit({model: model});
-            docEdit.render();
+            App.Views.docEdit = new App.Views.DocEdit({model: model});
+            App.Views.docEdit.render();
         },
 
         render: function(){
             var data = this.model.toJSON();
             data.id = data._id.toString();
+
             this.$el.html( this.template(data) );
             return this;
         }
@@ -56,9 +79,30 @@
       ==========================================================================
     */
     App.Views.DocEdit = BB.View.extend({
-        el: '.content',
+        className: 'content',
+
+        events: {
+            'focus input.value': 'editMode',
+            'blur input.value': 'onInputBlur'
+        },
 
         template: App.Helpers.Template('listItemTemplateEdit'),
+
+        editMode: function(e){
+            $(e.currentTarget).addClass('editing');
+        },
+
+        onInputBlur: function(e){
+            $(e.currentTarget).removeClass('editing');
+            var attr = $(e.currentTarget).data('key');
+            var value = e.currentTarget.value;
+
+            this.recordAttrChange(attr, value);
+        },
+
+        recordAttrChange: function(attr, value){
+            this.model.set(attr, value);
+        },
 
         toArray: function(obj){
             return _.map(
@@ -72,11 +116,38 @@
             );
         },
 
+        addDataType: function(dataObj){
+            var typeMap = {
+                string : 0,
+                html   : 1,
+                date   : 2
+            }
+
+            for (var i = 0; i < dataObj.length; i++) {
+                var str = dataObj[i].value;
+                if( App.Helpers.isHTML(str) ) dataObj[i].type = typeMap.html;
+                else dataObj[i].type = typeMap.string
+            };
+
+            return dataObj;
+        },
+
         render: function(){
-           this.$el.empty();
-           var data = this.toArray(this.model.toJSON());
-           this.$el.html( this.template({ list : data }) );
-           return this;
+            // Cleanup
+            $('.content').remove();
+
+            var data = this.toArray(this.model.toJSON());
+            data = this.addDataType(data);
+
+            //Append to DOM
+            this.$el.html( this.template({ list : data }) );
+            $('.content-wrapper').append(this.el);
+
+            //Render Ace
+            ace.config.set("basePath", "components/ace-builds/src-noconflict/");
+            App.Helpers.renderAce();
+
+            return this;
         },
     });
 
@@ -92,14 +163,16 @@
 
         fetch: function(success){
             var that = this;
+            App.eve.trigger('status:update', 'Getting Docs..');
 
             if(!App.db) throw new Error('No database connection. Cannot fetch data.');
 
-            App.db.collection(App.Config.Auth.collection).find().toArray( function (err, results) {
+            App.db.client.find().toArray( function (err, results) {
                 if(err){
                     throw err;
                 }else{
                     success.call(this, results);
+                    App.eve.trigger('status:update','Docs Received', true);
                 }
             });
         },
@@ -128,7 +201,6 @@
 
 
         render : function(){
-            console.log('Collection rendering...');
             this.$el.empty();
             this.collection.each(function(post){
                 this.addOne(post);
@@ -159,6 +231,14 @@
 
         initialize: function(){
             _.bindAll( this , 'notify' );
+
+            //Prefill last used login information
+            var config = localStorage.getObject('Config');
+            if( config && config.Auth ){
+                this.fillForm(config.Auth);
+            }
+
+            $( '.js-float-label-wrapper' ).FloatLabel();
         },
 
         events: {
@@ -169,14 +249,28 @@
         onSubmit: function(e){
             e.preventDefault();
             var formValues = this.getFormValues();
+
+            //Store form values
+            var config = localStorage.getObject('Config');
+            if(!config) config = {};
+            config.Auth = formValues;
+            localStorage.setObject('Config', config);
             this.tryConnect(formValues);
+        },
+
+        fillForm: function(auth){
+            for (var key in auth) {
+              if (auth.hasOwnProperty(key)) {
+                this.$el.find('input[name="' + key + '"]').attr('value', auth[key]);
+                console.log(key + " -> " + auth[key]);
+              }
+            }
         },
 
         tryConnect : function(formValues){
             var that = this;
-            var mongojs = require('mongojs');
+            App.mongojs = require('mongojs');
             var config = _.extend(App.Config.Auth, formValues);
-            console.log(config);
 
             // Local url or remote
             var url = '';
@@ -187,7 +281,7 @@
             }
 
             this.notify('Connecting..');
-            App.db = mongojs(url);
+            App.db = App.mongojs(url);
             App.db.getCollectionNames(function(err, names){
                 if(err){
                     var msg;
@@ -231,26 +325,45 @@
 
         onCollectionSelect: function(e){
             App.Config.Auth.collection = $(e.currentTarget).val();
+            App.db.client = App.db.collection(App.Config.Auth.collection);
             App.eve.trigger('modal:close');
             App.eve.trigger('status:connected')
         }
     });
 
+    /*
+      ==========================================================================
+        View Reference: Status Pane
+      ==========================================================================
+    */
+    App.Views.StatusPane = BB.View.extend({
+        el: '.status-pane',
+
+        setStatus: function(msg, reset){
+            var that = this;
+            this.$el.find('.status').text(msg);
+
+            if(reset){
+                setTimeout(function(){
+                    that.resetStatus();
+                }, 2000);
+            }
+        },
+
+        resetStatus: function(){
+            this.$el.find('.status').text('Idle');
+        }
+    });
+
+
     App.init = function(initData){
         App.Views.connect = new App.Views.Connect();
-        $( '.js-float-label-wrapper' ).FloatLabel();
 
-        App.eve.on('modal:close', function(){
-            $('body').removeClass('md-mode');
-        });
+        App.Views.statusPane = new App.Views.StatusPane();
 
         App.eve.on('status:connected', function(){
-            console.log('connected');
             // Init Collection
             App.Collections.docList = new App.Collections.DocList();
-            App.Collections.docList.on('all', function(e){
-                console.log(e);
-            })
 
             // Get Docs
             App.Collections.docList.fetch(function(results){
@@ -260,6 +373,16 @@
                 // Init Collection View
                 App.Views.docList = new App.Views.DocList({ collection: App.Collections.docList });
             });
+
+        });
+
+        // Eve
+        App.eve.on('modal:close', function(){
+            $('body').removeClass('md-mode');
+        });
+
+        App.eve.on('status:update', function(msg, reset){
+            App.Views.statusPane.setStatus(msg, reset);
         });
     }
 

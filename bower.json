@@ -8,6 +8,7 @@
     "font-awesome": "~4.0",
     "moment": "~2.2.1",
     "nprogress": "~0.1.2",
-    "floatLabel": "https://github.com/m10l/FloatLabel.js.git"
+    "floatLabel": "https://github.com/digitalmaster/FloatLabel.js.git",
+    "ace-builds": "https://github.com/ajaxorg/ace-builds.git"
   }
 }

@@ -11,9 +11,8 @@ body(ontouchstart).clear.md-mode
     .container
         #sidebar.column.animate
             //- Header
-            header.clear
-                .logo.pull-left
-                    <h2>MongoCMS <span>v0.0.1</span></h2>
+            .logo.pull-left.clear
+                <h2>MongoCMS <span>v0.0.1</span></h2>
 
             //- Navigation Menu
             ul.clear.documents
@@ -56,12 +55,15 @@ body(ontouchstart).clear.md-mode
             footer.clear.text-center &copy; 2013<br>Powered by Express & MongoDB
 
         #main.column
-            header
+            header.clear
                 ul.nav.pull-left
                     li
                         a(href="#") Documents
                     li
                         a(href="#") Configure
+                .status-pane.pull-right
+                    p.connection Connected
+                    p.status Idle
 
             .content-wrapper
                 .breadcrumbs Breadcrumbs
@@ -96,7 +98,7 @@ body(ontouchstart).clear.md-mode
 
             .js-float-label-wrapper
                 label Pass
-                input(type="text", name="psw")
+                input(type="password", name="psw")
 
             select(name="collection", class="collection-list hide", style="width: 100%")
                 option Select Collection
@@ -106,19 +108,31 @@ body(ontouchstart).clear.md-mode
 
     script(type='text/template', id="listItemTemplate")
         a(href="/", data-id!="<%= id %>").draft
-            p <%= title || _id %>
+            p.title <%= title || _id %>
             span.published.pull-left
                 | Draft
             span.views.pull-right
 
     script(type='text/template', id="listItemTemplateEdit").
         <% _(list).each(function(field) { %>
-            <div class="row clear">
-                <div class="label"><%= field.key %></div>
-                <div class="value" contenteditable="true"><%= field.value %></div>
-            </div>
-        <% }); %>
 
+            <% if( field.key != '_id') { %>
+                <div class="row clear ">
+                    <div class="label"><%= field.key %></div>
+                    <% if(field.type == 1){ %>
+                        <textarea data-editor="html" rows="15" class="value inEdit" data-key="<%= field.key %>"><%= field.value %></textarea>
+                    <% }else{ %>
+                        <input class="value inEdit" data-key="<%= field.key %>" value="<%= field.value %>"/>
+                    <% } %>
+                </div>
+            <% }else { %>
+                <div class="row clear">
+                    <div class="label"><%= field.key %></div>
+                    <p><%= field.value %><p/>
+                </div>
+            <% } %>
+
+        <% }); %>
 
 
     //- script(src='components/jquery/jquery.js')
@@ -129,4 +143,4 @@ body(ontouchstart).clear.md-mode
     //- script(src='js/namespaces.js')
     //- script(src='js/helpers.js')
     script(src='js/MongoCMS.js')
-    //- script(src='http://localhost:35729/livereload.js')
+    script(src='http://localhost:35729/livereload.js')

@@ -19,81 +19,57 @@ App.Helpers = {
       obj.show();
     },
 
-    initDisqusCount: function(){
-      if( typeof(DISQUSWIDGETS) !== 'undefined' ){
-        DISQUSWIDGETS.getCount();
-      }else{
-        (function () {
-          var s = document.createElement('script'); s.async = true;
-          s.type = 'text/javascript';
-          s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
-          (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
-        }());
-      }
+    isHTML: function(str) {
+        var a = document.createElement('div');
+        a.innerHTML = str;
+        for (var c = a.childNodes, i = c.length; i--; ) {
+            if (c[i].nodeType == 1) return true;
+        }
+        return false;
     },
 
-    initDisqus: function (config){
-      disqus_config.params = config;
-      if (this.loaded) {
-        DISQUS.reset({
-          reload: true
+    renderAce: function(){
+        // Based on: https://gist.github.com/duncansmart/5267653
+        $('textarea[data-editor]').each(function () {
+            var textarea = $(this);
+
+            var mode = textarea.data('editor');
+
+            var editDiv = $('<div>', {
+                position: 'absolute',
+                width: textarea.outerWidth(),
+                height: textarea.outerHeight(),
+                'class': textarea.attr('class')
+            }).insertBefore(textarea);
+
+            textarea.css('display', 'none');
+
+            var editor = ace.edit(editDiv[0]);
+            editor.renderer.setShowGutter(false);
+            editor.renderer.setShowPrintMargin(false);
+            editor.getSession().setValue(textarea.val());
+            editor.getSession().setMode("ace/mode/" + mode);
+            editor.setTheme("ace/theme/idle_fingers");
+
+            // add command for all new editors
+            editor.commands.addCommand({
+                name: "Toggle Fullscreen",
+                bindKey: "Command-Shift-F",
+                exec: function(editor) {
+                        $(document.body).toggleClass("fullScreen");
+                        $(editor.container).toggleClass("fullScreen-editor");
+                        editor.resize()
+                }
+            })
+
+            editor.on('blur', function(){
+                var attr = $(editor.container).next('textarea').data('key');
+                var val = editor.getSession().getValue();
+
+                App.Views.docEdit.recordAttrChange(attr, val);
+            });
         });
-      } else {
-        (function() {
-          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-          dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
-          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-        })();
-
-        this.loaded = true;
-      }
-    },
-
-    initShare: function(){
-      var context = $('#shareme');
-      context.find('.twitter-share').attr({
-        'data-url': this.url,
-        'data-text':this.title
-      });
-
-      context.find('.facebook-like').attr({
-        'data-href': this.url,
-        'href': 'http://www.facebook.com/sharer.php?u=' + this.url +'&t=' + this.title
-      });
-
-      context.find('.googleplus-one').attr({
-        'href': 'https://plus.google.com/share?url=' + this.url,
-        'data-href': this.url
-      });
-
-      Socialite.load(context);
-    },
-
-    updateMetaInfo: function(model){
-      // Defaults
-      this.title        = 'Blog - My online Playground';
-      this.description  = 'Web Dev, Seminole living in Silicon Valley. Checkout my blog!';
-      this.url          = window.location.href;
-
-      if(model){
-        this.title       = model.get('title');
-        this.description = model.get('contentIntro');
-      }
-
-      $(document).attr('title', this.title);
-      $('meta[name=description]').attr('content', this.description);
-      $('meta[name=og\\:title]').attr('content', this.title);
-      $('meta[name=og\\:description]').attr('content', this.description);
-      $('meta[name=og\\:url]').attr('content', this.url);
     }
-};
-
-// Needs to be global :-/
-var disqus_config = function disqus_config() {
-  var config = disqus_config.params;
-  this.page.identifier = config.identifier | null;
-  this.page.url        = config.url | null ;
-  this.page.title      = config.title | null;
 };
 
 
@@ -106,6 +82,15 @@ if (typeof String.prototype.endsWith !== 'function') {
     String.prototype.endsWith = function(suffix) {
         return this.indexOf(suffix, this.length - suffix.length) !== -1;
     };
+}
+
+Storage.prototype.setObject = function(key, value) {
+    this.setItem(key, JSON.stringify(value));
+}
+
+Storage.prototype.getObject = function(key) {
+    var value = this.getItem(key);
+    return value && JSON.parse(value);
 }
 
 /*
