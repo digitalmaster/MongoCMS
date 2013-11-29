@@ -8,26 +8,37 @@ module.exports = function (grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     watch: {
-      options: {
-        nospawn: true,
-        livereload: true
-      },
-      js: {
-        files: ['js/*.js'],
-        tasks: ['concat']
-      },
-      css: {
-        files: ['sass/*.{scss,sass}'],
-        tasks: ['compass', 'autoprefixer'],
         options: {
+            nospawn: true,
             livereload: true
-        }
-      },
+        },
+        js: {
+            files: ['js/*.js'],
+            tasks: ['concat']
+        },
 
-      jade: {
-        files: ['jade/*.jade'],
-        tasks: 'jade'
-      }
+        sass: {
+            options: {
+              livereload: false
+            },
+            files: ['sass/*.{scss,sass}'],
+            tasks: ['compass'],
+        },
+
+        css: {
+            options: {
+                livereload: true,
+                nospawn: true,
+                interrupt: true
+            },
+            tasks: ['compass', 'autoprefixer'],
+            files: ['css/main.css']
+        },
+
+        jade: {
+            files: ['jade/*.jade'],
+            tasks: 'jade'
+        }
     },
 
     compass: {
@@ -58,7 +69,9 @@ module.exports = function (grunt) {
         src: [
           'components/jquery/jquery.js',
           'components/underscore/underscore.js',
+          'components/backbone-deep-model/lib/underscore.mixin.deepExtend.js',
           'components/backbone/backbone.js',
+          'components/backbone-deep-model/src/deep-model.js',
           'components/nprogress/nprogress.js',
           'components/floatLabel/jquery.FloatLabel.js',
           'components/ace-builds/src-noconflict/ace.js',

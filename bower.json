@@ -9,6 +9,7 @@
     "moment": "~2.2.1",
     "nprogress": "~0.1.2",
     "floatLabel": "https://github.com/digitalmaster/FloatLabel.js.git",
-    "ace-builds": "https://github.com/ajaxorg/ace-builds.git"
+    "ace-builds": "https://github.com/ajaxorg/ace-builds.git",
+    "backbone-deep-model": "~0.10.4"
   }
 }

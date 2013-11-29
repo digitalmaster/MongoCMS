@@ -8,25 +8,43 @@
         Model: Document
       ==========================================================================
     */
-    App.Models.Doc = BB.Model.extend({
+    App.Models.Doc = BB.DeepModel.extend({
         initialize: function(){
             this.on('change', this.save);
             this.on('change:title', this.onTitleChange);
+            this.on('all', function(e){
+                console.log(e);
+            });
         },
 
         save: function(model){
+            var value = JSON.flatten(this.changed);
             var id = model.get('_id').toString();
+            var action = this.isRemoving(value) ? '$unset' : '$set';
+            var operation = {};
+            operation[action] = value;
             App.eve.trigger('status:update', 'Saving..');
             App.db.client.update(
                 { _id: App.mongojs.ObjectId(id) },
-                { $set: this.changed },
-                {},
+                operation,
+                {
+                    multi: false
+                },
                 function(err){
                     if(err) throw err;
 
                     App.eve.trigger('status:update', 'Saved', true);
                 }
             );
+        },
+
+        isRemoving: function(obj){
+            for(var key in obj) {
+                if(typeof obj[key] === 'undefined') {
+                  return true;
+                }
+              }
+            return false;
         },
 
         onTitleChange: function(model){
@@ -66,7 +84,7 @@
 
         render: function(){
             var data = this.model.toJSON();
-            data.id = data._id.toString();
+            data.id = this.model.get('_id').toString();
 
             this.$el.html( this.template(data) );
             return this;
@@ -79,17 +97,82 @@
       ==========================================================================
     */
     App.Views.DocEdit = BB.View.extend({
+        initialize: function(){
+            this.treeLevels = [];
+        },
+
         className: 'content',
 
         events: {
-            'focus input.value': 'editMode',
-            'blur input.value': 'onInputBlur'
+            'focus input.value'    : 'editMode',
+            'blur input.value'     : 'onInputBlur',
+            'click .navigate'      : 'onNavigateClick',
+            'click .breadcrumbs a' : 'onBreadCrumbClick',
+            'click .btn-add'       : 'onBtnAddClick',
+            'keyup input.newValue' : 'onKeyupNewValue',
+            'click .remove'        : 'onRemoveClick'
         },
+
+        treeLevels: [],
 
         template: App.Helpers.Template('listItemTemplateEdit'),
 
         editMode: function(e){
             $(e.currentTarget).addClass('editing');
+        },
+
+        onRemoveClick: function(e){
+            var key = $(e.currentTarget).data('key');
+            this.model.unset(this.getRelativeKey(key) );
+            this.render();
+        },
+
+        onKeyupNewValue: function(e){
+            if(e.which === 13) {
+                this.onBtnAddClick(e);
+            }
+        },
+
+        onBtnAddClick: function(e){
+            var $btn = this.$el.find('.btn-add'),
+                save = $btn.hasClass('save');
+
+            if(save){
+                var key = this.$el.find('.new input.newKey').val();
+                var value = this.$el.find('.new input.newValue').val();
+                if( this.recordAttrChange(key, value) ){
+                    this.$el.find('.row.new').remove();
+                    $btn.removeClass('save');
+                    this.render();
+                }
+            }else{
+                $btn.addClass('save').html('<i class="fa fa-floppy-o"></i>');
+                var html = App.Helpers.Template('addAttribute');
+                this.$el.append(html);
+                this.$el.find( '.js-float-label-wrapper' ).FloatLabel();
+                this.$el.find('.new input.newKey').focus();
+                $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+            }
+        },
+
+        onNavigateClick: function(e){
+            e.preventDefault();
+            var key = $(e.currentTarget).data('key');
+            this.treeLevels.push(key);
+            this.render();
+        },
+
+        onBreadCrumbClick: function(e){
+            var target = $(e.currentTarget).data('target');
+
+            if(target === '$root'){
+                this.treeLevels = [];
+            }else{
+                // delete everything after target in treeLevels
+                this.treeLevels.splice( this.treeLevels.indexOf(target) + 1 );
+            }
+
+            this.render();
         },
 
         onInputBlur: function(e){
@@ -101,7 +184,15 @@
         },
 
         recordAttrChange: function(attr, value){
-            this.model.set(attr, value);
+                return !!this.model.set( this.getRelativeKey(attr), value );
+        },
+
+        getRelativeKey : function(key){
+            if(this.treeLevels.length > 0){
+                return this.treeLevels.join('.') + '.' + key;
+            }else{
+                return key;
+            }
         },
 
         toArray: function(obj){
@@ -116,16 +207,18 @@
             );
         },
 
-        addDataType: function(dataObj){
+        addDataTypes: function(dataObj){
             var typeMap = {
                 string : 0,
-                html   : 1,
-                date   : 2
+                object : 1,
+                html   : 2,
+                date   : 3
             }
 
             for (var i = 0; i < dataObj.length; i++) {
-                var str = dataObj[i].value;
-                if( App.Helpers.isHTML(str) ) dataObj[i].type = typeMap.html;
+                var value = dataObj[i].value;
+                if( App.Helpers.isHTML(value) ) dataObj[i].type = typeMap.html;
+                else if(typeof value === 'object') dataObj[i].type = typeMap.object;
                 else dataObj[i].type = typeMap.string
             };
 
@@ -136,12 +229,24 @@
             // Cleanup
             $('.content').remove();
 
-            var data = this.toArray(this.model.toJSON());
-            data = this.addDataType(data);
+            var data = this.model.toJSON();
+            data._id.idString = this.model.get('_id').toString();
+            if(this.treeLevels.length > 0){
+                var traversed = Object.getByString(data, this.treeLevels.toString());
+                data = this.toArray(traversed);
+            }else{
+                data = this.toArray(data);
+            }
+
+            data = this.addDataTypes(data);
 
             //Append to DOM
-            this.$el.html( this.template({ list : data }) );
+            this.$el.html( this.template({
+                list : data,
+                tree : this.treeLevels
+            }));
             $('.content-wrapper').append(this.el);
+            this.delegateEvents(); // Because $.remove() also removes delegated Events
 
             //Render Ace
             ace.config.set("basePath", "components/ace-builds/src-noconflict/");
@@ -167,7 +272,7 @@
 
             if(!App.db) throw new Error('No database connection. Cannot fetch data.');
 
-            App.db.client.find().toArray( function (err, results) {
+            App.db.client.find().sort({ created: -1 }).toArray( function (err, results) {
                 if(err){
                     throw err;
                 }else{
@@ -237,13 +342,14 @@
             if( config && config.Auth ){
                 this.fillForm(config.Auth);
             }
-
+            $('.md-overlay-x').on('click', this.close);
             $( '.js-float-label-wrapper' ).FloatLabel();
         },
 
         events: {
             'submit' : 'onSubmit',
-            'change .collection-list': 'onCollectionSelect'
+            'change .collection-list': 'onCollectionSelect',
+            'click .show-connect': 'showConnectPane'
         },
 
         onSubmit: function(e){
@@ -274,7 +380,7 @@
 
             // Local url or remote
             var url = '';
-            if(config.host == 'localhost' && config.port == "27017"){
+            if(config.host == 'localhost' || config.host == '127.0.0.1'){
                 url = config.database;
             }else{
                 url = 'mongodb://'+ config.username +':' + config.psw + '@' + config.host +':' + config.port + '/' + config.database;
@@ -294,7 +400,9 @@
                     }
                     that.notify(msg);
                 }else{
-                    that.showSellectCollection(names);
+                    that.notify('Connect');
+                    App.Config.Auth.collectionNames = names;
+                    that.showSellectCollection();
                 }
 
             });
@@ -314,13 +422,23 @@
             return data;
         },
 
-        showSellectCollection: function(names){
+        showSellectCollection: function(){
+            var names = App.Config.Auth.collectionNames;
+            // Hide Connection pane
+            this.$el.find('.connect-pane').addClass('hide');
+            this.$el.find('.select-collection-pane').removeClass('hide');
+
             var list = this.$el.find('.collection-list').empty().append('<option>Select Collection</option>');
             for (var i = 0; i < names.length; i++) {
                 if(names[i].slice(0,6) === 'system') continue;
                 $('<option/>').val(names[i]).html(names[i]).appendTo(list);
             }
-            list.show();
+            list.show().focus();
+        },
+
+        showConnectPane: function(){
+            this.$el.find('.connect-pane').removeClass('hide');
+            this.$el.find('.select-collection-pane').addClass('hide');
         },
 
         onCollectionSelect: function(e){
@@ -328,6 +446,10 @@
             App.db.client = App.db.collection(App.Config.Auth.collection);
             App.eve.trigger('modal:close');
             App.eve.trigger('status:connected')
+        },
+
+        close: function(){
+            App.eve.trigger('modal:close')
         }
     });
 
@@ -339,26 +461,47 @@
     App.Views.StatusPane = BB.View.extend({
         el: '.status-pane',
 
+        events: {
+            'click .connection' : 'onConnectionClick'
+        },
+
         setStatus: function(msg, reset){
             var that = this;
             this.$el.find('.status').text(msg);
 
             if(reset){
                 setTimeout(function(){
-                    that.resetStatus();
+                    that.$el.find('.status').text('Idle');
                 }, 2000);
             }
         },
 
-        resetStatus: function(){
-            this.$el.find('.status').text('Idle');
+        onConnectionClick: function(){
+            App.eve.trigger('modal:show');
+        }
+    });
+
+    App.Views.Navigation = BB.View.extend({
+        el: '.nav',
+
+        events: {
+            'click a[data-target="collection"]': 'onCollectionClick',
+            'click a[data-target="config"]': 'onConfigClick'
+        },
+
+        onCollectionClick: function(e){
+            App.eve.trigger('connect:showCollectionSelect');
+        },
+
+        onConfigClick: function(e){
+            console.log('Config clicked');
         }
     });
 
 
     App.init = function(initData){
         App.Views.connect = new App.Views.Connect();
-
+        App.Views.navigation = new App.Views.Navigation();
         App.Views.statusPane = new App.Views.StatusPane();
 
         App.eve.on('status:connected', function(){
@@ -381,8 +524,22 @@
             $('body').removeClass('md-mode');
         });
 
+        App.eve.on('modal:show', function(){
+            $('body').addClass('md-mode');
+        });
+
         App.eve.on('status:update', function(msg, reset){
             App.Views.statusPane.setStatus(msg, reset);
+        });
+
+        App.eve.on('connect:show', function(){
+            App.eve.trigger('modal:show');
+            App.Views.connect.showConnectPane();
+        });
+
+        App.eve.on('connect:showCollectionSelect', function(){
+            App.eve.trigger('modal:show');
+            App.Views.connect.showSellectCollection();
         });
     }
 

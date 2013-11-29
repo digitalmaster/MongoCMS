@@ -23,13 +23,13 @@
         <li><a href="#">
             <p>769768544563783</p><span class="published pull-left">2 months ago</span><span class="views pull-right"><i class="fa fa-eye"></i>200</span></a></li>
       </ul>
-      <footer class="clear text-center">&copy; 2013<br>Powered by Express & MongoDB</footer>
+      <footer class="clear text-center">&copy; 2013<br>Powered by Node-Webkit</footer>
     </div>
     <div id="main" class="column">
       <header class="clear">
         <ul class="nav pull-left">
-          <li><a href="#">Documents</a></li>
-          <li><a href="#">Configure</a></li>
+          <li><a href="#" data-target="collection">Collections</a></li>
+          <li><a href="#" data-target="config">Configure</a></li>
         </ul>
         <div class="status-pane pull-right">
           <p class="connection">Connected</p>
@@ -37,74 +37,105 @@
         </div>
       </header>
       <div class="content-wrapper">
-        <div class="breadcrumbs">Breadcrumbs</div>
         <div class="content">
           <div class="row clear">
             <div class="key pull-left">What's up Key</div>
             <div class="value pull-right">Hey value</div>
           </div>
-          <div class="row clear">
-            <div class="key pull-left">What's up Key</div>
-            <div class="value pull-right">Hey value</div>
+          <div class="row new clear">
+            <input placeholder="key" class="key pull-left">
+            <input placeholder="value" class="value pull-right">
           </div>
         </div>
       </div>
     </div>
   </div>
   <div class="md-overlay"></div>
-  <div class="md-content centered">
+  <div class="md-content centered animate">
     <form id="connect" method="post" action="#" class="connect">
-      <p class="text-center title">Connect</p>
-      <div class="js-float-label-wrapper">
-        <label for="host">Host</label>
-        <input type="text" name="host" value="localhost">
+      <div class="connect-pane">
+        <p class="text-center title">Connect</p>
+        <div class="js-float-label-wrapper">
+          <label for="host">Host</label>
+          <input type="text" name="host" value="localhost">
+        </div>
+        <div class="js-float-label-wrapper">
+          <label>Port</label>
+          <input type="text" name="port" value="27017">
+        </div>
+        <div class="js-float-label-wrapper">
+          <label>Database</label>
+          <input type="text" name="database">
+        </div>
+        <div class="js-float-label-wrapper">
+          <label>User</label>
+          <input type="text" name="username">
+        </div>
+        <div class="js-float-label-wrapper">
+          <label>Pass</label>
+          <input type="password" name="psw">
+        </div>
+        <button type="submit" class="btn center connect">Connect</button>
       </div>
-      <div class="js-float-label-wrapper">
-        <label>Port</label>
-        <input type="text" name="port" value="27017">
+      <div class="select-collection-pane hide">
+        <p style="margin-bottom: 10px; font-weight: bold;" class="text-center title clear flat-green">Conected!</p>
+        <select name="collection" style="width: 100%; margin: 10px 0;" class="collection-list hide clear">
+          <option>Select Collection</option>
+        </select><a href="#" class="show-connect center text-center small"><i class="fa fa-bolt"></i> New Connection</a>
       </div>
-      <div class="js-float-label-wrapper">
-        <label>Database</label>
-        <input type="text" name="database">
-      </div>
-      <div class="js-float-label-wrapper">
-        <label>User</label>
-        <input type="text" name="username">
-      </div>
-      <div class="js-float-label-wrapper">
-        <label>Pass</label>
-        <input type="password" name="psw">
-      </div>
-      <select name="collection" style="width: 100%" class="collection-list hide">
-        <option>Select Collection</option>
-      </select>
-      <button type="submit" class="btn center connect">Connect</button>
     </form>
-  </div>
+  </div><span class="md-overlay-x">X</span>
   <script type="text/template" id="listItemTemplate"><a href="/" data-id="<%= id %>" class="draft">
-      <p class="title"><%= title || _id %></p><span class="published pull-left">Draft</span><span class="views pull-right"></span></a></script>
+      <p class="title"><%= typeof(title) !== 'undefined' ? title : id %></p><span class="published pull-left">Draft</span><span class="views pull-right"></span></a></script>
   <script type="text/template" id="listItemTemplateEdit">
+    <div class="breadcrumbs">
+        <span class="root">
+            {<a href="#" data-target="$root"><i class="fa fa-home"></i></a>}
+        </span>
+        <% _(tree).each(function(value){ %>
+            <i class="fa fa-angle-right separator"></i>
+            <a href="#" data-target="<%= value %>"><%= value %></a>
+        <% }); %>
+    </div>
+    
     <% _(list).each(function(field) { %>
     
         <% if( field.key != '_id') { %>
             <div class="row clear ">
-                <div class="label"><%= field.key %></div>
-                <% if(field.type == 1){ %>
+                <span class="remove" data-key="<%= field.key %>"><i class="fa fa-times-circle"></i></span>
+                <% if(field.type == 1 /* object */){ %>
+                    <div class="label nested"><%= field.key %></div>
+                    <span class="pull-right">
+                        <a href="#" class="navigate" data-key="<%= field.key %>" >
+                            <i class="fa fa-chevron-circle-right flat-blue"></i>
+                        </a>
+                    </span>
+                <% }else if(field.type == 2 /* HTML */){ %>
+                    <div class="label"><%= field.key %></div>
                     <textarea data-editor="html" rows="15" class="value inEdit" data-key="<%= field.key %>"><%= field.value %></textarea>
+                    
                 <% }else{ %>
+                    <div class="label"><%= field.key %></div>
                     <input class="value inEdit" data-key="<%= field.key %>" value="<%= field.value %>"/>
                 <% } %>
             </div>
         <% }else { %>
             <div class="row clear">
                 <div class="label"><%= field.key %></div>
-                <p><%= field.value %><p/>
+                <p><%= field.value.idString %><p/>
             </div>
         <% } %>
         
     <% }); %>
     
+    <button class="btn btn-add center"><span>+<span></button>
     
+  </script>
+  <script type="text/template" id="addAttribute">
+    <div class="row new clear">
+      <input placeholder="key" class="newKey pull-left">
+      <input placeholder="value" class="newValue pull-right">
+    </div>
   </script>
   <script src="js/MongoCMS.js"></script>
   <script src="http://localhost:35729/livereload.js"></script>
