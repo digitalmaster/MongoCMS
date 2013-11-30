@@ -12,6 +12,7 @@
         initialize: function(){
             this.on('change', this.save);
             this.on('change:title', this.onTitleChange);
+            this.on('active:toggle', this.toggleActiveClass);
             this.on('all', function(e){
                 console.log(e);
             });
@@ -51,6 +52,11 @@
             var id = model.get('_id').toString();
             var newTitle = model.get('title');
             App.Views.docList.$el.find('*[data-id="' + id + '"]').find('.title').text(newTitle);
+        },
+
+        toggleActiveClass: function(model){
+            var id = model.get('_id').toString();
+            App.Views.docList.$el.find('*[data-id="' + id + '"]').toggleClass("active");
         }
     });
 
@@ -80,6 +86,7 @@
 
             App.Views.docEdit = new App.Views.DocEdit({model: model});
             App.Views.docEdit.render();
+            App.Collections.docList.setActive(model);
         },
 
         render: function(){
@@ -266,6 +273,8 @@
 
         db: null,
 
+        active: null,
+
         fetch: function(success){
             var that = this;
             App.eve.trigger('status:update', 'Getting Docs..');
@@ -281,6 +290,15 @@
                 }
             });
         },
+
+        setActive: function(model){
+            if(this.active){
+                this.active.trigger('active:toggle', this.active);
+            }
+
+            this.active = model;
+            this.active.trigger('active:toggle', this.active );
+        }
 
     });
 

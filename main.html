@@ -112,7 +112,7 @@
                     </span>
                 <% }else if(field.type == 2 /* HTML */){ %>
                     <div class="label"><%= field.key %></div>
-                    <textarea data-editor="html" rows="15" class="value inEdit" data-key="<%= field.key %>"><%= field.value %></textarea>
+                    <textarea data-editor="html" class="value inEdit" data-key="<%= field.key %>"><%= field.value %></textarea>
                     
                 <% }else{ %>
                     <div class="label"><%= field.key %></div>

@@ -38,7 +38,7 @@ App.Helpers = {
             var editDiv = $('<div>', {
                 position: 'absolute',
                 width: textarea.outerWidth(),
-                height: textarea.outerHeight(),
+                height: textarea[0].scrollHeight,
                 'class': textarea.attr('class')
             }).insertBefore(textarea);
 
@@ -46,6 +46,9 @@ App.Helpers = {
 
             var editor = ace.edit(editDiv[0]);
             editor.renderer.setShowGutter(false);
+            editor.setOption("maxLines", 60);
+            editor.setOption("minLines", 5);
+            editor.setAutoScrollEditorIntoView();
             editor.renderer.setShowPrintMargin(false);
             editor.getSession().setValue(textarea.val());
             editor.getSession().setMode("ace/mode/" + mode);
