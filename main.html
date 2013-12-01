@@ -23,6 +23,7 @@
         <li><a href="#">
             <p>769768544563783</p><span class="published pull-left">2 months ago</span><span class="views pull-right"><i class="fa fa-eye"></i>200</span></a></li>
       </ul>
+      <div class="add-new-doc text-center"><i class="fa fa-plus"></i></div>
       <footer class="clear text-center">&copy; 2013<br>Powered by Node-Webkit</footer>
     </div>
     <div id="main" class="column">
@@ -85,7 +86,7 @@
       </div>
     </form>
   </div><span class="md-overlay-x">X</span>
-  <script type="text/template" id="listItemTemplate"><a href="/" data-id="<%= id %>" class="draft">
+  <script type="text/template" id="listItemTemplate"><a href="/" data-id="<%= id %>" class="draft"><span class="remove" data-key="<%= id %>"><i class="fa fa-times-circle"></i></span>
       <p class="title"><%= typeof(title) !== 'undefined' ? title : id %></p><span class="published pull-left">Draft</span><span class="views pull-right"></span></a></script>
   <script type="text/template" id="listItemTemplateEdit">
     <div class="breadcrumbs">
@@ -113,7 +114,9 @@
                 <% }else if(field.type == 2 /* HTML */){ %>
                     <div class="label"><%= field.key %></div>
                     <textarea data-editor="html" class="value inEdit" data-key="<%= field.key %>"><%= field.value %></textarea>
-                    
+                <% }else if(field.type == 3 /* DATE */){ %>
+                    <div class="label"><%= field.key %></div>
+                    <input class="value inEdit" type="datetime-local" data-key="<%= field.key %>" value="<%= moment(field.value).format('YYYY-MM-DDTHH:mm:ss') %>"/>
                 <% }else{ %>
                     <div class="label"><%= field.key %></div>
                     <input class="value inEdit" data-key="<%= field.key %>" value="<%= field.value %>"/>

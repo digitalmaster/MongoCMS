@@ -51,6 +51,9 @@ body(ontouchstart).clear.md-mode
                           i.fa.fa-eye
                           | 200
 
+            .add-new-doc.text-center
+                i(class="fa fa-plus")
+
             footer.clear.text-center &copy; 2013<br>Powered by Node-Webkit
 
         #main.column
@@ -109,6 +112,7 @@ body(ontouchstart).clear.md-mode
 
     script(type='text/template', id="listItemTemplate")
         a(href="/", data-id!="<%= id %>").draft
+            <span class="remove" data-key="<%= id %>"><i class="fa fa-times-circle"></i></span>
             p.title <%= typeof(title) !== 'undefined' ? title : id %>
             span.published.pull-left
                 | Draft
@@ -140,7 +144,9 @@ body(ontouchstart).clear.md-mode
                     <% }else if(field.type == 2 /* HTML */){ %>
                         <div class="label"><%= field.key %></div>
                         <textarea data-editor="html" class="value inEdit" data-key="<%= field.key %>"><%= field.value %></textarea>
-
+                    <% }else if(field.type == 3 /* DATE */){ %>
+                        <div class="label"><%= field.key %></div>
+                        <input class="value inEdit" type="datetime-local" data-key="<%= field.key %>" value="<%= moment(field.value).format('YYYY-MM-DDTHH:mm:ss') %>"/>
                     <% }else{ %>
                         <div class="label"><%= field.key %></div>
                         <input class="value inEdit" data-key="<%= field.key %>" value="<%= field.value %>"/>

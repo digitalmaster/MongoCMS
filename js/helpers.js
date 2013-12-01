@@ -114,29 +114,47 @@ Object.getByString = function(o, s) {
 }
 
 // http://stackoverflow.com/a/19101235/831738
-JSON.flatten = function(data) {
-    var result = {};
-    function recurse (cur, prop) {
-        if (Object(cur) !== cur) {
-            result[prop] = cur;
-        } else if (Array.isArray(cur)) {
-             for(var i=0, l=cur.length; i<l; i++)
-                 recurse(cur[i], prop + "[" + i + "]");
-            if (l == 0)
-                result[prop] = [];
+JSON.flatten = (function (isArray, wrapped) {
+    return function (table) {
+        return reduce("", {}, table);
+    };
+
+    function reduce(path, accumulator, table) {
+        if (isArray(table)) {
+            var length = table.length;
+
+            if (length) {
+                var index = 0;
+
+                while (index < length) {
+                    var property = path + "[" + index + "]", item = table[index++];
+                    if (wrapped(item) !== item) accumulator[property] = item;
+                    else reduce(property, accumulator, item);
+                }
+            } else accumulator[path] = table;
         } else {
-            var isEmpty = true;
-            for (var p in cur) {
-                isEmpty = false;
-                recurse(cur[p], prop ? prop+"."+p : p);
+            var empty = true;
+
+            if (path) {
+                for (var property in table) {
+                    var item = table[property], property = path + "." + property, empty = false;
+                    if (wrapped(item) !== item) accumulator[property] = item;
+                    else reduce(property, accumulator, item);
+                }
+            } else {
+                for (var property in table) {
+                    var item = table[property], empty = false;
+                    if (wrapped(item) !== item) accumulator[property] = item;
+                    else reduce(property, accumulator, item);
+                }
             }
-            if (isEmpty)
-                result[prop] = {};
+
+            if (empty) accumulator[path] = table;
         }
+
+        return accumulator;
     }
-    recurse(data, "");
-    return result;
-}
+}(Array.isArray, Object));
 
 /*
   ==========================================================================

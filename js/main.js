@@ -9,13 +9,27 @@
       ==========================================================================
     */
     App.Models.Doc = BB.DeepModel.extend({
-        initialize: function(){
+        initialize: function(attr, options){
             this.on('change', this.save);
             this.on('change:title', this.onTitleChange);
             this.on('active:toggle', this.toggleActiveClass);
-            this.on('all', function(e){
-                console.log(e);
-            });
+            this.on('remove', this.destroy);
+            if(options.save){
+                this.insertNew(this.toJSON());
+            }
+        },
+
+        insertNew: function(attr){
+            App.db.client.save(attr);
+        },
+
+        destroy: function(model, options){
+            console.log('destoryin....');
+            var id = model.get('_id').toString();
+            App.db.client.remove(
+                { _id: App.mongojs.ObjectId(id) },
+                true
+            );
         },
 
         save: function(model){
@@ -69,24 +83,27 @@
         tagName: 'li',
 
         events: {
-           'click': 'showEdit'
+           'click': 'showEdit',
+           'click .remove': 'remove'
         },
 
         className: 'clear',
 
         template: App.Helpers.Template('listItemTemplate'),
 
+        remove: function(e){
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            this.$el.remove();
+            App.Collections.docList.remove(this.model);
+        },
+
         showEdit: function(e){
             e && e.preventDefault();
-            var currentId = $(e.currentTarget).find('a').data('id');
-            // get the model
-            var model = _.find( App.Collections.docList.models, function(model){
-                return currentId == model.get('_id').toString();
-            });
 
-            App.Views.docEdit = new App.Views.DocEdit({model: model});
+            App.Views.docEdit = new App.Views.DocEdit({model: this.model});
             App.Views.docEdit.render();
-            App.Collections.docList.setActive(model);
+            App.Collections.docList.setActive(this.model);
         },
 
         render: function(){
@@ -187,6 +204,10 @@
             var attr = $(e.currentTarget).data('key');
             var value = e.currentTarget.value;
 
+            if( Date.parse(value) ){
+                value = new Date(value)
+            };
+
             this.recordAttrChange(attr, value);
         },
 
@@ -225,8 +246,9 @@
             for (var i = 0; i < dataObj.length; i++) {
                 var value = dataObj[i].value;
                 if( App.Helpers.isHTML(value) ) dataObj[i].type = typeMap.html;
+                else if( value instanceof Date ) dataObj[i].type = typeMap.date;
                 else if(typeof value === 'object') dataObj[i].type = typeMap.object;
-                else dataObj[i].type = typeMap.string
+                else dataObj[i].type = typeMap.string;
             };
 
             return dataObj;
@@ -312,14 +334,28 @@
 
         initialize: function(){
             this.render();
+            _.bindAll(this, 'addNewDoc');
             this.collection.on('reset', this.render, this);
+            $('#sidebar .add-new-doc i').on('click', this.addNewDoc);
         },
 
-        addOne : function(model){
+        addNewDoc: function(){
+            var id =  App.mongojs.ObjectId();
+            var model = new App.Models.Doc({_id : id}, { save: true });
+            this.collection.add(model);
+            this.addOne(model, {edit: true})
+        },
+
+        addOne : function(model, options){
             if(!model) return;
 
             var docView = new App.Views.DocListItem({ model: model });
             this.$el.append(docView.render().el);
+
+            if(options && options.edit){
+                docView.showEdit();
+                this.$el.animate({ scrollTop: this.$el[0].scrollHeight }, "slow");
+            }
         },
 
 
@@ -386,7 +422,6 @@
             for (var key in auth) {
               if (auth.hasOwnProperty(key)) {
                 this.$el.find('input[name="' + key + '"]').attr('value', auth[key]);
-                console.log(key + " -> " + auth[key]);
               }
             }
         },
@@ -525,6 +560,7 @@
         App.eve.on('status:connected', function(){
             // Init Collection
             App.Collections.docList = new App.Collections.DocList();
+            App.Collections.docList.on('all', function(e){console.log(e);})
 
             // Get Docs
             App.Collections.docList.fetch(function(results){

@@ -72,6 +72,7 @@ module.exports = function (grunt) {
           'components/backbone-deep-model/lib/underscore.mixin.deepExtend.js',
           'components/backbone/backbone.js',
           'components/backbone-deep-model/src/deep-model.js',
+          'components/moment/moment.js',
           'components/nprogress/nprogress.js',
           'components/floatLabel/jquery.FloatLabel.js',
           'components/ace-builds/src-noconflict/ace.js',

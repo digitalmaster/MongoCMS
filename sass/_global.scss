@@ -212,6 +212,24 @@ blockquote {
         background-color: #fafafa;
         height: 1000px;
 
+        .add-new-doc{
+            position: absolute;
+            width: 100%;
+
+            i{
+                background-color: $flat-green;
+                padding: 5px 5px 3px 5px;
+                position: relative;
+                top: -10px;
+                color: whitesmoke;
+                border-radius: 3px;
+                &:hover{
+                    background-color: lighten($flat-green, 5%);
+                    cursor: pointer;
+                }
+            }
+        }
+
         .documents{
             list-style-type: none;
             padding: 0;
@@ -225,6 +243,7 @@ blockquote {
                     display: block;
                     border-bottom: 1px solid #f2f2f2;
                     overflow: hidden;
+                    position: relative;
 
                     &:hover,
                     &.active{
@@ -243,16 +262,42 @@ blockquote {
                             margin-right: 5px;
                         }
 
-                        &.views{ color: $gray-lightish }
+                        &.views{ color: $gray-lightish; }
+
+                        &.published{
+                            &.draft{
+                                color: $flat-red;
+                            }
+                        }
+
+                        &.remove{
+                            position: absolute;
+                            right: 5px;
+                            top: 25px;
+                            font-size: 14px;
+                            color: $flat-red;
+                            opacity: 0;
+                            transition: opacity 0.2s ease-out;
+                            &:hover{
+                                color: darken($flat-red, 15%);
+                                text-shadow: 0 0 1px #CCC;
+                            }
+                        }
+
                     }
 
-                    &.draft{
-                        span{ color: $flat-red }
+                    &:hover{
+                        .remove{
+                            opacity: 1;
+                        }
                     }
+
 
                 }
+
                 &:last-child a{border-bottom: 0;}
             }
+
         }
 
 
