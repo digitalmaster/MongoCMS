@@ -1,19 +1,21 @@
 ## Synopsis
 
 MongoCMS is just a very simple content editor for mongodb collections. It makes manging rich content types very simple, clean and elegant. 
-
+![](https://raw.github.com/digitalmaster/MongoCMS/master/img/screenshots/doc-edit.png)
 ## Motivation
 
 My primary motivation for building this tool was my personal blog (www.josebrowne.com). My process for updating HTML content was very painfull (encode, decode, encode, decode..etc). Manually adding dates was also suprisingly tricky (ex ISODate("2011-04-24T09:00:00.000Z"). I tried EVERY tool out there and none solved this problem for me. I had two weeks off so I decided to give it a shot.
 
 ## Features
 - Connect to local and Remote collections
+![](https://raw.github.com/digitalmaster/MongoCMS/master/img/screenshots/connect.png)
 - Inline editing
 - Create/Delete documents
 - Create/Update/Edit or Delete data
 - Support for nested fields
 - Easy breadcrumbs navigation for nested data
 - Inline HTMl editing (with ace)
+![](https://raw.github.com/digitalmaster/MongoCMS/master/img/screenshots/ace-editor.png)
 - Easy date inputs (using HTML5 datetime input type)
 
 More features coming soon..
@@ -54,7 +56,7 @@ Note: Package app before sending pull request. run ``grunt package``
 
 The MIT License (MIT)
 
-Copyright (c) 2013 Todd Hooper &lt;josebrowne@gmail.com.com&gt;
+Copyright (c) 2013 Jose Browne &lt;josebrowne@gmail.com.com&gt;
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
