@@ -8,3 +8,5 @@ dist
 components
 js/MongoCMS.js
 css
+
+main.html

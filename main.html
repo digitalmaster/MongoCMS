@@ -12,25 +12,18 @@
     <div id="sidebar" class="column animate">
       <div class="logo pull-left clear"><h2>MongoCMS <span>v0.0.1</span></h2></div>
       <ul class="clear documents">
-        <li class="clear"><a href="/" class="draft">
-            <p>Whoooi title</p><span class="published pull-left">Draft</span><span class="views pull-right"></span></a></li>
-        <li><a href="#" class="draft">
-            <p>Long live PHP</p><span class="published pull-left">Draft</span><span class="views pull-right"></span></a></li>
-        <li><a href="#">
-            <p>Sure again why not</p><span class="published pull-left">2 days ago</span><span class="views pull-right"><i class="fa fa-eye"></i>1543</span></a></li>
-        <li><a href="#">
-            <p>Why do titles have to be so long tho?</p><span class="published pull-left">2 months ago</span><span class="views pull-right"><i class="fa fa-eye"></i>200</span></a></li>
         <li><a href="#">
             <p>769768544563783</p><span class="published pull-left">2 months ago</span><span class="views pull-right"><i class="fa fa-eye"></i>200</span></a></li>
       </ul>
-      <div class="add-new-doc text-center"><i class="fa fa-plus"></i></div>
+      <div class="add-new-doc text-center"><i class="fa">+</i></div>
       <footer class="clear text-center">&copy; 2013<br>Powered by Node-Webkit</footer>
     </div>
     <div id="main" class="column">
       <header class="clear">
         <ul class="nav pull-left">
           <li><a href="#" data-target="collection">Collections</a></li>
-          <li><a href="#" data-target="config">Configure</a></li>
+          <li><a href="#" data-target="connect">Connection</a></li>
+          <li class="hide"><a href="#" data-target="config">Configure</a></li>
         </ul>
         <div class="status-pane pull-right">
           <p class="connection">Connected</p>
@@ -38,16 +31,7 @@
         </div>
       </header>
       <div class="content-wrapper">
-        <div class="content">
-          <div class="row clear">
-            <div class="key pull-left">What's up Key</div>
-            <div class="value pull-right">Hey value</div>
-          </div>
-          <div class="row new clear">
-            <input placeholder="key" class="key pull-left">
-            <input placeholder="value" class="value pull-right">
-          </div>
-        </div>
+        <div class="content"></div>
       </div>
     </div>
   </div>
@@ -61,12 +45,12 @@
           <input type="text" name="host" value="localhost">
         </div>
         <div class="js-float-label-wrapper">
-          <label>Port</label>
-          <input type="text" name="port" value="27017">
-        </div>
-        <div class="js-float-label-wrapper">
           <label>Database</label>
           <input type="text" name="database">
+        </div>
+        <div class="js-float-label-wrapper">
+          <label>Port</label>
+          <input type="text" name="port">
         </div>
         <div class="js-float-label-wrapper">
           <label>User</label>
@@ -85,9 +69,13 @@
         </select><a href="#" class="show-connect center text-center small"><i class="fa fa-bolt"></i> New Connection</a>
       </div>
     </form>
-  </div><span class="md-overlay-x">X</span>
+  </div><span class="md-overlay-x hide">X</span>
+  <script type="text/template" id="startPageTemplate">
+    <p>Documentation coming soon...</p>
+    <p class="x-small">WARNING: This is a "pre-alpha" release. Please backup your data before using MongoCMS.</p>
+  </script>
   <script type="text/template" id="listItemTemplate"><a href="/" data-id="<%= id %>" class="draft"><span class="remove" data-key="<%= id %>"><i class="fa fa-times-circle"></i></span>
-      <p class="title"><%= typeof(title) !== 'undefined' ? title : id %></p><span class="published pull-left">Draft</span><span class="views pull-right"></span></a></script>
+      <p class="title"><%= typeof(title) !== 'undefined' ? title : id %></p><% if(typeof(created) !== 'undefined') { %><span class="published pull-left"><%= moment(created).fromNow() %></span><% } %><% if(typeof(views) !== 'undefined') { %><span class="views pull-right"><i class="fa fa-eye"></i><%= views %></span><% } %></a></script>
   <script type="text/template" id="listItemTemplateEdit">
     <div class="breadcrumbs">
         <span class="root">
@@ -123,9 +111,8 @@
                 <% } %>
             </div>
         <% }else { %>
-            <div class="row clear">
-                <div class="label"><%= field.key %></div>
-                <p><%= field.value.idString %><p/>
+            <div class="row id clear">
+                <span class="key"><%= field.key %></span> &nbsp;&nbsp;| &nbsp;&nbsp;<%= field.value.idString %>
             </div>
         <% } %>
         

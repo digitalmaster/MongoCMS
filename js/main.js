@@ -24,7 +24,6 @@
         },
 
         destroy: function(model, options){
-            console.log('destoryin....');
             var id = model.get('_id').toString();
             App.db.client.remove(
                 { _id: App.mongojs.ObjectId(id) },
@@ -94,6 +93,10 @@
         remove: function(e){
             e.preventDefault();
             e.stopImmediatePropagation();
+
+            var confirmation = confirm('Warning: This will PERMANENTLY delete this record!');
+            if(!confirmation) return;
+
             this.$el.remove();
             App.Collections.docList.remove(this.model);
         },
@@ -147,6 +150,10 @@
 
         onRemoveClick: function(e){
             var key = $(e.currentTarget).data('key');
+
+            var confirmation = confirm('Warning: This will PERMANENTLY delete this value!');
+            if(!confirmation) return;
+
             this.model.unset(this.getRelativeKey(key) );
             this.render();
         },
@@ -170,13 +177,19 @@
                     this.render();
                 }
             }else{
-                $btn.addClass('save').html('<i class="fa fa-floppy-o"></i>');
-                var html = App.Helpers.Template('addAttribute');
-                this.$el.append(html);
-                this.$el.find( '.js-float-label-wrapper' ).FloatLabel();
-                this.$el.find('.new input.newKey').focus();
-                $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+                this.showAddForm();
             }
+        },
+
+        showAddForm: function(){
+            var $btn = this.$el.find('.btn-add');
+
+            $btn.addClass('save').html('<i class="fa fa-floppy-o"></i>');
+            var html = App.Helpers.Template('addAttribute');
+            this.$el.append(html);
+            this.$el.find( '.js-float-label-wrapper' ).FloatLabel();
+            this.$el.find('.new input.newKey').focus();
+            $("html, body").animate({ scrollTop: $(document).height() }, "slow");
         },
 
         onNavigateClick: function(e){
@@ -204,15 +217,15 @@
             var attr = $(e.currentTarget).data('key');
             var value = e.currentTarget.value;
 
-            if( Date.parse(value) ){
-                value = new Date(value)
-            };
-
             this.recordAttrChange(attr, value);
         },
 
         recordAttrChange: function(attr, value){
-                return !!this.model.set( this.getRelativeKey(attr), value );
+            if( Date.parse(value) ){
+                value = new Date(value)
+            };
+
+            return !!this.model.set( this.getRelativeKey(attr), value );
         },
 
         getRelativeKey : function(key){
@@ -333,10 +346,18 @@
         el: '.documents',
 
         initialize: function(){
-            this.render();
             _.bindAll(this, 'addNewDoc');
             this.collection.on('reset', this.render, this);
             $('#sidebar .add-new-doc i').on('click', this.addNewDoc);
+        },
+
+        showLoader: function(){
+            var html
+                = '<p class="text-center">'
+                +       '<i class="fa fa-spinner fa-spin"></i>'
+                + '</p>';
+
+            this.$el.html(html);
         },
 
         addNewDoc: function(){
@@ -354,6 +375,7 @@
 
             if(options && options.edit){
                 docView.showEdit();
+                App.Views.docEdit.showAddForm();
                 this.$el.animate({ scrollTop: this.$el[0].scrollHeight }, "slow");
             }
         },
@@ -415,6 +437,7 @@
             if(!config) config = {};
             config.Auth = formValues;
             localStorage.setObject('Config', config);
+
             this.tryConnect(formValues);
         },
 
@@ -429,15 +452,16 @@
         tryConnect : function(formValues){
             var that = this;
             App.mongojs = require('mongojs');
-            var config = _.extend(App.Config.Auth, formValues);
+
+            var config = App.Config.Auth; // defaults
+            _.extend(config, formValues );
 
             // Local url or remote
-            var url = '';
-            if(config.host == 'localhost' || config.host == '127.0.0.1'){
-                url = config.database;
-            }else{
-                url = 'mongodb://'+ config.username +':' + config.psw + '@' + config.host +':' + config.port + '/' + config.database;
+            var url = 'mongodb://';
+            if(config.username && config.psw){
+                url += config.username +':' + config.psw + '@'
             }
+            url += config.host +':' + config.port + '/' + config.database;
 
             this.notify('Connecting..');
             App.db = App.mongojs(url);
@@ -498,7 +522,7 @@
             App.Config.Auth.collection = $(e.currentTarget).val();
             App.db.client = App.db.collection(App.Config.Auth.collection);
             App.eve.trigger('modal:close');
-            App.eve.trigger('status:connected')
+            App.eve.trigger('status:connected');
         },
 
         close: function(){
@@ -530,7 +554,7 @@
         },
 
         onConnectionClick: function(){
-            App.eve.trigger('modal:show');
+            App.eve.trigger('connect:show');
         }
     });
 
@@ -539,11 +563,16 @@
 
         events: {
             'click a[data-target="collection"]': 'onCollectionClick',
+            'click a[data-target="connect"]': 'onConnectionClick',
             'click a[data-target="config"]': 'onConfigClick'
         },
 
         onCollectionClick: function(e){
             App.eve.trigger('connect:showCollectionSelect');
+        },
+
+        onConnectionClick: function(e){
+            App.eve.trigger('connect:show')
         },
 
         onConfigClick: function(e){
@@ -557,18 +586,19 @@
         App.Views.navigation = new App.Views.Navigation();
         App.Views.statusPane = new App.Views.StatusPane();
 
-        App.eve.on('status:connected', function(){
-            // Init Collection
-            App.Collections.docList = new App.Collections.DocList();
-            App.Collections.docList.on('all', function(e){console.log(e);})
+        // Init Collection
+        App.Collections.docList = new App.Collections.DocList();
 
+        // Init Collection View
+        App.Views.docList = new App.Views.DocList({ collection: App.Collections.docList });
+
+        App.eve.on('status:connected', function(){
+            App.Views.docList.showLoader();
             // Get Docs
             App.Collections.docList.fetch(function(results){
                 // Add data to collection
                 App.Collections.docList.reset(results);
-
-                // Init Collection View
-                App.Views.docList = new App.Views.DocList({ collection: App.Collections.docList });
+                App.eve.trigger('showStartPage');
             });
 
         });
@@ -576,6 +606,7 @@
         // Eve
         App.eve.on('modal:close', function(){
             $('body').removeClass('md-mode');
+            $('.md-overlay-x').removeClass('hide');
         });
 
         App.eve.on('modal:show', function(){
@@ -595,8 +626,13 @@
             App.eve.trigger('modal:show');
             App.Views.connect.showSellectCollection();
         });
+
+        App.eve.on('showStartPage', function(){
+            $('.content').html( App.Helpers.Template('startPageTemplate')() );
+        });
     }
 
 })(this, jQuery, Backbone, _);
 
 App.init();
+$('body').css('min-height', $(window).height()); // I know.. i'm ashamed

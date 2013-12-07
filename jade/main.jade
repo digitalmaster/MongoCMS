@@ -15,33 +15,6 @@ body(ontouchstart).clear.md-mode
                 <h2>MongoCMS <span>v0.0.1</span></h2>
 
             ul.clear.documents
-                li.clear
-                  a(href="/").draft
-                    p Whoooi title
-                    span.published.pull-left
-                        | Draft
-                    span.views.pull-right
-                li
-                  a(href="#").draft
-                    p Long live PHP
-                    span.published.pull-left Draft
-                    span.views.pull-right
-                li
-                  a(href="#")
-                    p Sure again why not
-                    span.published.pull-left
-                        | 2 days ago
-                    span.views.pull-right
-                        i.fa.fa-eye
-                        | 1543
-                li
-                  a(href="#")
-                    p Why do titles have to be so long tho?
-                    span.published.pull-left
-                        | 2 months ago
-                    span.views.pull-right
-                        i.fa.fa-eye
-                        | 200
                 li
                     a(href="#")
                       p 769768544563783
@@ -52,7 +25,7 @@ body(ontouchstart).clear.md-mode
                           | 200
 
             .add-new-doc.text-center
-                i(class="fa fa-plus")
+                i.fa +
 
             footer.clear.text-center &copy; 2013<br>Powered by Node-Webkit
 
@@ -62,6 +35,8 @@ body(ontouchstart).clear.md-mode
                     li
                         a(href="#", data-target="collection") Collections
                     li
+                        a(href="#", data-target="connect") Connection
+                    li.hide
                         a(href="#", data-target="config") Configure
                 .status-pane.pull-right
                     p.connection Connected
@@ -69,12 +44,6 @@ body(ontouchstart).clear.md-mode
 
             .content-wrapper
                 .content
-                    .row.clear
-                        .key.pull-left What's up Key
-                        .value.pull-right Hey value
-                    .row.new.clear
-                        input.key.pull-left(placeholder="key") What's up Key
-                        input.value.pull-right(placeholder="value") Hey value
 
     .md-overlay
     .md-content.centered.animate
@@ -87,12 +56,12 @@ body(ontouchstart).clear.md-mode
                     input(type="text", name="host", value="localhost")
 
                 .js-float-label-wrapper
-                    label Port
-                    input(type="text", name="port", value="27017")
-
-                .js-float-label-wrapper
                     label Database
                     input(type="text", name="database")
+
+                .js-float-label-wrapper
+                    label Port
+                    input(type="text", name="port")
 
                 .js-float-label-wrapper
                     label User
@@ -108,15 +77,27 @@ body(ontouchstart).clear.md-mode
                 select(name="collection", class="collection-list hide clear", style="width: 100%; margin: 10px 0;")
                     option Select Collection
                 a.show-connect.center.text-center.small(href="#")<i class="fa fa-bolt"></i> New Connection
-    span.md-overlay-x X
+    span.md-overlay-x.hide X
+
+    script(type='text/template', id="startPageTemplate")
+        p Documentation coming soon...
+        p.x-small WARNING: This is a "pre-alpha" release. Please backup your data before using MongoCMS.
 
     script(type='text/template', id="listItemTemplate")
         a(href="/", data-id!="<%= id %>").draft
             <span class="remove" data-key="<%= id %>"><i class="fa fa-times-circle"></i></span>
             p.title <%= typeof(title) !== 'undefined' ? title : id %>
+            //- Show date created if available
+            <% if(typeof(created) !== 'undefined') { %>
             span.published.pull-left
-                | Draft
+                | <%= moment(created).fromNow() %>
+            <% } %>
+            //- Show Views if available
+            <% if(typeof(views) !== 'undefined') { %>
             span.views.pull-right
+                i.fa.fa-eye
+                | <%= views %>
+            <% } %>
 
     script(type='text/template', id="listItemTemplateEdit").
         <div class="breadcrumbs">
@@ -153,9 +134,8 @@ body(ontouchstart).clear.md-mode
                     <% } %>
                 </div>
             <% }else { %>
-                <div class="row clear">
-                    <div class="label"><%= field.key %></div>
-                    <p><%= field.value.idString %><p/>
+                <div class="row id clear">
+                    <span class="key"><%= field.key %></span> &nbsp;&nbsp;| &nbsp;&nbsp;<%= field.value.idString %>
                 </div>
             <% } %>
 

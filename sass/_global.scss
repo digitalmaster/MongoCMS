@@ -215,10 +215,11 @@ blockquote {
         .add-new-doc{
             position: absolute;
             width: 100%;
+            font-weight: 200;
 
             i{
                 background-color: $flat-green;
-                padding: 5px 5px 3px 5px;
+                padding: 3px 6px 4px 6px;
                 position: relative;
                 top: -10px;
                 color: whitesmoke;
@@ -239,7 +240,7 @@ blockquote {
                 a{
                     color: $blue-dark-light;
                     text-decoration: none;
-                    padding: 10px 20px;
+                    padding: 15px 20px;
                     display: block;
                     border-bottom: 1px solid #f2f2f2;
                     overflow: hidden;
@@ -273,7 +274,7 @@ blockquote {
                         &.remove{
                             position: absolute;
                             right: 5px;
-                            top: 25px;
+                            top: 22px;
                             font-size: 14px;
                             color: $flat-red;
                             opacity: 0;
@@ -338,6 +339,7 @@ blockquote {
         // margin: 5px $gutter;
     }
 
+
     .content-wrapper{
         padding: 20px 36px;
         margin-top: $header-height;
@@ -353,6 +355,10 @@ blockquote {
 
         h1{
             margin: 0;
+        }
+
+        h2 {
+            border-bottom: 1px solid #eeeeee;
         }
         .breadcrumbs{
             position: absolute;
@@ -405,6 +411,7 @@ blockquote {
                 margin: 5px 0;
             }
 
+
             input.inEdit{
                 border: none;
                 border: 1px solid transparent;
@@ -423,6 +430,18 @@ blockquote {
 
             input.editing{
                 background-color: white;
+            }
+
+            &.id{
+                background-color: $blue-dark;
+                border-top-left-radius: 3px;
+                border-top-right-radius: 3px;
+                padding: 7px 25px;
+                color: #757E8A;
+                font-weight: 200;
+                .key{
+                    font-weight: bold;
+                }
             }
 
             &.new{
@@ -530,6 +549,10 @@ blockquote {
         .md-overlay{
             visibility: visible;
             opacity: 1;
+        }
+
+        .container{
+            @include blur(6px);
         }
     }
 
