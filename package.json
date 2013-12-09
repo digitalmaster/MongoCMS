@@ -1,13 +1,13 @@
 {
   "name": "MongoCMS",
-  "version": "0.0.1",
+  "version": "0.1",
   "description": "Manage Mongo content",
   "main": "main.html",
   "node-remote": "<local>",
   "window": {
     "title": "MongoCMS",
     "position": "center",
-    "toolbar": true,
+    "toolbar": false,
     "frame": true,
     "width": 1200,
     "height": 800,

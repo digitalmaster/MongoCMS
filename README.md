@@ -20,16 +20,19 @@ My primary motivation for building this tool was my personal blog (www.josebrown
 
 More features coming soon..
 
-## Basic Usage
+# Getting Started
+
+### Download
+- OSX: [Download v0.01](releases/0.1/osx/MongoCMS_osx_v0.1.tar.bz2)
+- Win: (Just needs to be packaged)
+- Linux : (Just needs to be packaged) 
 
 ### Connect
-You can connect to bot local (mongod) instances as well as remote databases. For local connections the only required fields are **HOST** and **database**. Once connected select your collection from the list.
+You can connect to bot local (mongod) instances as well as remote databases. For local connections the only required fields are **HOST** and **database**. Once connected select your collection from the list and you're good to go.
 
 
 ### Editing Changes
 MongoCMS currently supports full CRUD operations on Collections and Documents. Simply select or create a document in document list on left then begin making inline edits. To save changes simple blur (click outisde of inputs). 
-
-
 
 
 ## TODO next
@@ -41,14 +44,13 @@ MongoCMS currently supports full CRUD operations on Collections and Documents. S
 - Edit keys
 - Reduce package file size
 
-If you have any other suggestions feel free to create feature request. 
+The HTML5 stack makes it very easy for many developers to contribute so if you have any other suggestions feel free to create a feature request. 
 
 ## Contributing
 
 1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`) 
-Note: Package app before sending pull request. run ``grunt package``
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 
@@ -56,7 +58,7 @@ Note: Package app before sending pull request. run ``grunt package``
 
 The MIT License (MIT)
 
-Copyright (c) 2013 Jose Browne &lt;josebrowne@gmail.com.com&gt;
+Copyright (c) 2013 Jose Browne &lt;josebrowne@gmail.com&gt;
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
