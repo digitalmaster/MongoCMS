@@ -25,19 +25,26 @@
 
         destroy: function(model, options){
             var id = model.get('_id').toString();
+            NProgress.start();
             App.db.client.remove(
                 { _id: App.mongojs.ObjectId(id) },
-                true
+                true,
+                function(err){
+                    if(err) console.error('Could not deleting document', err);
+                    NProgress.done();
+                }
             );
         },
 
         save: function(model){
+            NProgress.start();
             var value = JSON.flatten(this.changed);
             var id = model.get('_id').toString();
             var action = this.isRemoving(value) ? '$unset' : '$set';
             var operation = {};
             operation[action] = value;
             App.eve.trigger('status:update', 'Saving..');
+            NProgress.start();
             App.db.client.update(
                 { _id: App.mongojs.ObjectId(id) },
                 operation,
@@ -45,9 +52,10 @@
                     multi: false
                 },
                 function(err){
-                    if(err) throw err;
+                    if(err) console.log(err);
 
                     App.eve.trigger('status:update', 'Saved', true);
+                    NProgress.done();
                 }
             );
         },
@@ -315,11 +323,11 @@
             var that = this;
             App.eve.trigger('status:update', 'Getting Docs..');
 
-            if(!App.db) throw new Error('No database connection. Cannot fetch data.');
+            if(!App.db) console.error('No database connection. Cannot fetch data.');
 
             App.db.client.find().sort({ created: -1 }).toArray( function (err, results) {
                 if(err){
-                    throw err;
+                    console.error('Could not fetch collection', err);
                 }else{
                     success.call(this, results);
                     App.eve.trigger('status:update','Docs Received', true);
@@ -451,6 +459,7 @@
         },
 
         tryConnect : function(formValues){
+            NProgress.start();
             var that = this;
             App.mongojs = require('mongojs');
 
@@ -464,6 +473,8 @@
             }
             url += config.host +':' + config.port + '/' + config.database;
 
+            url += '?auto_reconnect=true&poolSize=20&keepAlive=1'
+
             this.notify('Connecting..');
             App.db = App.mongojs(url);
             App.db.getCollectionNames(function(err, names){
@@ -476,13 +487,14 @@
                         default:
                             msg = "Error: Could not connect"
                     }
+                    console.error(msg, err);
                     that.notify(msg);
                 }else{
                     that.notify('Connect');
                     App.Config.Auth.collectionNames = names;
                     that.showSellectCollection();
                 }
-
+                NProgress.done();
             });
 
         },
@@ -595,8 +607,10 @@
 
         App.eve.on('status:connected', function(){
             App.Views.docList.showLoader();
+            NProgress.start();
             // Get Docs
             App.Collections.docList.fetch(function(results){
+                NProgress.done();
                 // Add data to collection
                 App.Collections.docList.reset(results);
                 App.eve.trigger('showStartPage');

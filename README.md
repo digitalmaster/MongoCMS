@@ -22,10 +22,7 @@ More features coming soon..
 
 # Getting Started
 
-### Download
-- OSX: [Download v0.01](http://s395965318.onlinehome.us/mongocms/0.1/osx/MongoCMS_osx_v0.1.tar.bz2)
-- Win: (Just needs to be packaged)
-- Linux : (Just needs to be packaged) 
+### [Download](http://www.josebrowne.com/open/mongocms)
 
 ### Connect
 You can connect to bot local (mongod) instances as well as remote databases. For local connections the only required fields are **HOST** and **database**. Once connected select your collection from the list and you're good to go.
@@ -42,7 +39,8 @@ MongoCMS currently supports full CRUD operations on Collections and Documents. S
 - Infinite Scroll for Document list
 - Add "create collection" feature to connect dialog
 - Edit keys
-- Reduce package file size
+- Add config options
+
 
 The HTML5 stack makes it very easy for many developers to contribute so if you have any other suggestions feel free to create a feature request. 
 

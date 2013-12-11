@@ -670,12 +670,10 @@ blockquote {
 
 /*
   ==========================================================================
-   nprogress overrides
+   nprogress override
   ==========================================================================
 */
-body.tag-personal {@include loadingColor($tag-personal)}
-body.tag-tutorials{@include loadingColor($tag-tutorials)}
-body.tag-tips     {@include loadingColor($tag-tips)}
+body {@include loadingColor($flat-green)}
 
 /*
   ==========================================================================
