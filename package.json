@@ -1,8 +1,9 @@
 {
   "name": "MongoCMS",
-  "version": "0.1",
+  "version": "0.0.1",
   "description": "Manage Mongo content",
   "main": "main.html",
+  "private": true,
   "node-remote": "<local>",
   "window": {
     "title": "MongoCMS",
@@ -29,7 +30,6 @@
     "grunt-autoprefixer": "~0.4.1",
     "grunt-groundskeeper": "~0.1.6",
     "grunt-contrib-jade": "~0.8.0",
-    "grunt-contrib-compass": "~0.7.0",
-    "grunt-node-webkit-builder": "~0.1.13"
+    "grunt-contrib-compass": "~0.7.0"
   }
 }

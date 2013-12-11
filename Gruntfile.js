@@ -103,19 +103,6 @@ module.exports = function (grunt) {
             'css/main.css': 'css/main.css'
         }
       }
-    },
-
-    nodewebkit: {
-        options: {
-            build_dir: './builds',
-            mac: true,
-            win: true,
-            linux32: false,
-            linux64: false,
-            mac_icns: './icons/mcms.icns'
-        },
-        src: ['./**']
-
     }
 
   });
@@ -129,8 +116,5 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-groundskeeper');
   grunt.loadNpmTasks('grunt-autoprefixer');
 
-  grunt.loadNpmTasks('grunt-node-webkit-builder');
-
   grunt.registerTask('default', ['concat','compass', 'jade', 'autoprefixer', 'watch']);
-  grunt.registerTask('package', ['nodewebkit']);
 };

@@ -51,6 +51,7 @@ App.Helpers = {
             editor.setAutoScrollEditorIntoView();
             editor.renderer.setShowPrintMargin(false);
             editor.getSession().setValue(textarea.val());
+            editor.getSession().setUseWrapMode(true);
             editor.getSession().setMode("ace/mode/" + mode);
             editor.setTheme("ace/theme/idle_fingers");
 

@@ -221,9 +221,10 @@
         },
 
         recordAttrChange: function(attr, value){
-            if( Date.parse(value) ){
-                value = new Date(value)
-            };
+            if( value.toLowerCase() == "true" ){ value = true; }
+            else if (value.toLowerCase() == "false"){ value = false }
+            else if( $.isNumeric(value) ){ value = +value; }
+            else if( Date.parse(value) ){ value = new Date(value); }
 
             return !!this.model.set( this.getRelativeKey(attr), value );
         },

@@ -23,7 +23,7 @@ More features coming soon..
 # Getting Started
 
 ### Download
-- OSX: [Download v0.01](releases/0.1/osx/MongoCMS_osx_v0.1.tar.bz2)
+- OSX: [Download v0.01](http://s395965318.onlinehome.us/mongocms/0.1/osx/MongoCMS_osx_v0.1.tar.bz2)
 - Win: (Just needs to be packaged)
 - Linux : (Just needs to be packaged) 
 
