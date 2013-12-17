@@ -1,10 +1,10 @@
 ## Synopsis
 
-MongoCMS is just a very simple content editor for mongodb collections. It makes manging rich content types very simple, clean and elegant. 
+MongoCMS is just a very simple content editor for MongoDB collections. It makes manging rich content types very simple, clean and elegant. 
 ![](https://raw.github.com/digitalmaster/MongoCMS/master/img/screenshots/doc-edit.png)
 ## Motivation
 
-My primary motivation for building this tool was my personal blog (www.josebrowne.com). My process for updating HTML content was very painfull (encode, decode, encode, decode..etc). Manually adding dates was also suprisingly tricky (ex ISODate("2011-04-24T09:00:00.000Z"). I tried EVERY tool out there and none solved this problem for me. I had two weeks off so I decided to give it a shot.
+My primary motivation for building this tool was my personal blog (www.josebrowne.com). My process for updating HTML content was very painful (encode, decode, encode, decode..etc). Manually adding dates was also surprisingly tricky (ex ISODate("2011-04-24T09:00:00.000Z"). I tried EVERY tool out there and none solved this problem for me. I had two weeks off so I decided to give it a shot.
 
 ## Features
 - Connect to local and Remote collections
@@ -29,7 +29,18 @@ You can connect to bot local (mongod) instances as well as remote databases. For
 
 
 ### Editing Changes
-MongoCMS currently supports full CRUD operations on Collections and Documents. Simply select or create a document in document list on left then begin making inline edits. To save changes simple blur (click outisde of inputs). 
+MongoCMS currently supports full CRUD operations on Collections and Documents. Simply select or create a document in document list on left then begin making in-line edits. To save changes simple blur (click outside of inputs). 
+
+### Special keys
+The UI will optionally recognize and display certain root keys if they exist
+
+- **created**: will display relative in collection list
+- **views**: will display view count in collection list
+- **title**: will use this instead of id string in collection list titles
+
+
+### Keyboard Shortcuts
+- **Full Screen Ace Editor**: CMD + Shift + F
 
 
 ## TODO next

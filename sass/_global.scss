@@ -142,6 +142,8 @@ blockquote {
                     &:hover{
                         cursor: pointer;
                     }
+
+                    &.offline{ color: $flat-red }
                 }
 
                 &.status{

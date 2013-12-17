@@ -549,14 +549,47 @@
       ==========================================================================
     */
     App.Views.StatusPane = BB.View.extend({
+        initialize: function(){
+            _.bindAll( this , 'monitorStatus' );
+            setInterval(this.monitorStatus, 5000);
+        },
+
         el: '.status-pane',
 
         events: {
             'click .connection' : 'onConnectionClick'
         },
 
+        monitorStatus: function(){
+            var timmer = null;
+            var that = this;
+            App.db.runCommand({ping:1}, function(err, res){
+                clearTimeout(timmer);
+                timmer = null;
+                if(!err && res.ok){
+                    that.updateConnectionStatus(true);
+                }else{
+                    that.updateConnectionStatus(false);
+                }
+            });
+            if(!timmer){
+                timmer = setTimeout(function(){
+                    that.updateConnectionStatus(false);
+                }, 3500);
+            }
+        },
+
+        updateConnectionStatus: function(isConnected){
+            if(!_.isBoolean(isConnected)) console.error('Expected boolean value');
+
+            var statText = this.$el.find('.connection');
+            if(isConnected) statText.removeClass('offline').text('Connected');
+            else statText.addClass('offline').text('Offline');
+        },
+
         setStatus: function(msg, reset){
             var that = this;
+
             this.$el.find('.status').text(msg);
 
             if(reset){
@@ -597,7 +630,6 @@
     App.init = function(initData){
         App.Views.connect = new App.Views.Connect();
         App.Views.navigation = new App.Views.Navigation();
-        App.Views.statusPane = new App.Views.StatusPane();
 
         // Init Collection
         App.Collections.docList = new App.Collections.DocList();
@@ -606,6 +638,7 @@
         App.Views.docList = new App.Views.DocList({ collection: App.Collections.docList });
 
         App.eve.on('status:connected', function(){
+            App.Views.statusPane = new App.Views.StatusPane();
             App.Views.docList.showLoader();
             NProgress.start();
             // Get Docs
@@ -614,6 +647,7 @@
                 // Add data to collection
                 App.Collections.docList.reset(results);
                 App.eve.trigger('showStartPage');
+
             });
 
         });
@@ -649,5 +683,8 @@
 
 })(this, jQuery, Backbone, _);
 
+process.on('uncaughtException', function(err) {
+    console.log("Uncaught exception!", err);
+});
 App.init();
 $('body').css('min-height', $(window).height()); // I know.. i'm ashamed
