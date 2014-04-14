@@ -10,7 +10,7 @@
 <body ontouchstart class="clear md-mode">
   <div class="container">
     <div id="sidebar" class="column animate">
-      <div class="logo pull-left clear"><h2>MongoCMS <span>v0.0.1</span></h2></div>
+      <div class="logo pull-left clear"><h2>MongoMan <span>v0.0.1</span></h2></div>
       <ul class="clear documents">
         <li><a href="#">
             <p>769768544563783</p><span class="published pull-left">2 months ago</span><span class="views pull-right"><i class="fa fa-eye"></i>200</span></a></li>
@@ -76,6 +76,10 @@
   </script>
   <script type="text/template" id="listItemTemplate"><a href="/" data-id="<%= id %>" class="draft"><span class="remove" data-key="<%= id %>"><i class="fa fa-times-circle"></i></span>
       <p class="title"><%= typeof(title) !== 'undefined' ? title : id %></p><% if(typeof(created) !== 'undefined') { %><span class="published pull-left"><%= moment(created).fromNow() %></span><% } %><% if(typeof(views) !== 'undefined') { %><span class="views pull-right"><i class="fa fa-eye"></i><%= views %></span><% } %></a></script>
+  <script type="text/template" id="listItemTemplateEditJSON">
+    <textarea data-editor="json" class="editor-json"></textarea>
+    
+  </script>
   <script type="text/template" id="listItemTemplateEdit">
     <div class="breadcrumbs">
         <span class="root">
@@ -89,8 +93,13 @@
     
     <% _(list).each(function(field) { %>
     
-        <% if( field.key != '_id') { %>
-            <div class="row clear ">
+        <% if( field.key == '_id') { %>
+            <div class="row id clear">
+                <span class="key"><%= field.key %></span> &nbsp;&nbsp;| &nbsp;&nbsp;<%= field.value.idString %>
+                <a href="#" class="edit-raw pull-right">{ JSON }</a>
+            </div>
+        <% }else { %>
+            <div class="row clear editableRow">
                 <span class="remove" data-key="<%= field.key %>"><i class="fa fa-times-circle"></i></span>
                 <% if(field.type == 1 /* object */){ %>
                     <div class="label nested"><%= field.key %></div>
@@ -110,10 +119,6 @@
                     <input class="value inEdit" data-key="<%= field.key %>" value="<%= field.value %>"/>
                 <% } %>
             </div>
-        <% }else { %>
-            <div class="row id clear">
-                <span class="key"><%= field.key %></span> &nbsp;&nbsp;| &nbsp;&nbsp;<%= field.value.idString %>
-            </div>
         <% } %>
         
     <% }); %>
@@ -127,6 +132,17 @@
       <input placeholder="value" class="newValue pull-right">
     </div>
   </script>
-  <script src="js/MongoCMS.js"></script>
-  <script src="http://localhost:35729/livereload.js"></script>
+  <script src="components/jquery/jquery.js"></script>
+  <script src="components/underscore/underscore.js"></script>
+  <script src="components/backbone-deep-model/lib/underscore.mixin.deepExtend.js"></script>
+  <script src="components/backbone/backbone.js"></script>
+  <script src="components/backbone-deep-model/src/deep-model.js"></script>
+  <script src="components/moment/moment.js"></script>
+  <script src="components/nprogress/nprogress.js"></script>
+  <script src="components/floatLabel/jquery.FloatLabel.js"></script>
+  <script src="components/ace-builds/src-noconflict/ace.js"></script>
+  <script src="js/namespaces.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/main.js"></script>
+  <script src="http://localhost.com:35729/livereload.js"></script>
 </body>

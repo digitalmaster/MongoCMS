@@ -34,7 +34,7 @@ MongoCMS currently supports full CRUD operations on Collections and Documents. S
 ### Special keys
 The UI will optionally recognize and display certain root keys if they exist
 
-- **created**: will display relative in collection list
+- **created**: will display relative time in collection list
 - **views**: will display view count in collection list
 - **title**: will use this instead of id string in collection list titles
 

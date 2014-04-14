@@ -1,6 +1,7 @@
-'use strict';
 
 (function(exports, $, BB, _){
+    'use strict';
+
     App.eve = _.extend({}, BB.Events);
 
     /*
@@ -145,15 +146,18 @@
             'click .breadcrumbs a' : 'onBreadCrumbClick',
             'click .btn-add'       : 'onBtnAddClick',
             'keyup input.newValue' : 'onKeyupNewValue',
-            'click .remove'        : 'onRemoveClick'
+            'click .remove'        : 'onRemoveClick',
+            'click .edit-raw'      : 'onEditJsonClick'
         },
 
         treeLevels: [],
 
         template: App.Helpers.Template('listItemTemplateEdit'),
+        templateJSON: App.Helpers.Template('listItemTemplateEditJSON'),
 
-        editMode: function(e){
-            $(e.currentTarget).addClass('editing');
+        onEditJsonClick: function(e){
+            e.preventDefault();
+            this.renderJSON();
         },
 
         onRemoveClick: function(e){
@@ -276,18 +280,37 @@
             return dataObj;
         },
 
+        editMode: function(e){
+            $(e.currentTarget).addClass('editing');
+        },
+
+        renderJSON: function(){
+            this.$el.find('.editableRow').remove();
+
+            //Append to DOM
+            this.$el.find('.id').after(this.templateJSON())
+
+            App.Helpers.renderAce(this.model);
+        },
+
         render: function(){
+            var data = {};
+
             // Cleanup
             $('.content').remove();
 
-            var data = this.model.toJSON();
-            data._id.idString = this.model.get('_id').toString();
+            data = this.model.toJSON();
             if(this.treeLevels.length > 0){
-                var traversed = Object.getByString(data, this.treeLevels.toString());
-                data = this.toArray(traversed);
-            }else{
-                data = this.toArray(data);
+                data = Object.getByString(data, this.treeLevels.toString());
             }
+
+            // Add id string at root
+            if(this.treeLevels.length < 1){
+                data._id = this.model.toJSON()._id;
+                data._id.idString = this.model.get('_id').toString();
+            }
+
+            data = this.toArray(data);
 
             data = this.addDataTypes(data);
 
@@ -300,8 +323,9 @@
             this.delegateEvents(); // Because $.remove() also removes delegated Events
 
             //Render Ace
-            ace.config.set("basePath", "components/ace-builds/src-noconflict/");
             App.Helpers.renderAce();
+
+            $(window).scrollTop(0); // Scroll back to top
 
             return this;
         },
@@ -388,7 +412,6 @@
                 this.$el.animate({ scrollTop: this.$el[0].scrollHeight }, "slow");
             }
         },
-
 
         render : function(){
             this.$el.empty();

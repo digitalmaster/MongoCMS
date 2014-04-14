@@ -1,4 +1,4 @@
-doctype 5
+doctype html
 html
   head
     title= 'MongoCMS'
@@ -12,7 +12,7 @@ body(ontouchstart).clear.md-mode
         #sidebar.column.animate
             //- Header
             .logo.pull-left.clear
-                <h2>MongoCMS <span>v0.0.1</span></h2>
+                <h2>MongoMan <span>v0.0.1</span></h2>
 
             ul.clear.documents
                 li
@@ -99,6 +99,9 @@ body(ontouchstart).clear.md-mode
                 | <%= views %>
             <% } %>
 
+    script(type='text/template', id="listItemTemplateEditJSON").
+        <textarea data-editor="json" class="editor-json"></textarea>
+
     script(type='text/template', id="listItemTemplateEdit").
         <div class="breadcrumbs">
             <span class="root">
@@ -112,8 +115,13 @@ body(ontouchstart).clear.md-mode
 
         <% _(list).each(function(field) { %>
 
-            <% if( field.key != '_id') { %>
-                <div class="row clear ">
+            <% if( field.key == '_id') { %>
+                <div class="row id clear">
+                    <span class="key"><%= field.key %></span> &nbsp;&nbsp;| &nbsp;&nbsp;<%= field.value.idString %>
+                    <a href="#" class="edit-raw pull-right">{ JSON }</a>
+                </div>
+            <% }else { %>
+                <div class="row clear editableRow">
                     <span class="remove" data-key="<%= field.key %>"><i class="fa fa-times-circle"></i></span>
                     <% if(field.type == 1 /* object */){ %>
                         <div class="label nested"><%= field.key %></div>
@@ -133,10 +141,6 @@ body(ontouchstart).clear.md-mode
                         <input class="value inEdit" data-key="<%= field.key %>" value="<%= field.value %>"/>
                     <% } %>
                 </div>
-            <% }else { %>
-                <div class="row id clear">
-                    <span class="key"><%= field.key %></span> &nbsp;&nbsp;| &nbsp;&nbsp;<%= field.value.idString %>
-                </div>
             <% } %>
 
         <% }); %>
@@ -148,12 +152,16 @@ body(ontouchstart).clear.md-mode
             input.newKey.pull-left(placeholder="key")
             input.newValue.pull-right(placeholder="value")
 
-    //- script(src='components/jquery/jquery.js')
-    //- script(src='components/underscore/underscore.js')l
-    //- script(src='components/backbone/backbone.js')
-    //- script(src='components/nprogress/nprogress.js')
-    //- script(src='components/socialite/socialite.js')
-    //- script(src='js/namespaces.js')
-    //- script(src='js/helpers.js')
-    script(src='js/MongoCMS.js')
-    script(src='http://localhost:35729/livereload.js')
+    script(src='components/jquery/jquery.js')
+    script(src='components/underscore/underscore.js')
+    script(src='components/backbone-deep-model/lib/underscore.mixin.deepExtend.js')
+    script(src='components/backbone/backbone.js')
+    script(src='components/backbone-deep-model/src/deep-model.js')
+    script(src='components/moment/moment.js')
+    script(src='components/nprogress/nprogress.js')
+    script(src='components/floatLabel/jquery.FloatLabel.js')
+    script(src='components/ace-builds/src-noconflict/ace.js')
+    script(src='js/namespaces.js')
+    script(src='js/helpers.js')
+    script(src='js/main.js')
+    script(src='http://localhost.com:35729/livereload.js')

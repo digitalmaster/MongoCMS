@@ -354,6 +354,7 @@ blockquote {
         box-shadow: 0 2px 0 rgba(210, 211, 212, 0.75);
         margin: 20px 0 65px 0;
         position: relative;
+        overflow: hidden;
 
         h1{
             margin: 0;
@@ -647,9 +648,13 @@ blockquote {
 .ace_editor {
     border: 1px solid lightgray;
     margin: auto;
-    height: 200px;
+    min-height: 200px;
     width: 80%;
     position: relative !important
+}
+
+.ace_scrollbar {
+    display: none;
 }
 
 .fullScreen .fullScreen-editor{

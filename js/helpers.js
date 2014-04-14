@@ -28,7 +28,8 @@ App.Helpers = {
         return false;
     },
 
-    renderAce: function(){
+    renderAce: function(model){
+        ace.config.set("basePath", "components/ace-builds/src-noconflict/");
         // Based on: https://gist.github.com/duncansmart/5267653
         $('textarea[data-editor]').each(function () {
             var textarea = $(this);
@@ -46,14 +47,32 @@ App.Helpers = {
 
             var editor = ace.edit(editDiv[0]);
             editor.renderer.setShowGutter(false);
-            editor.setOption("maxLines", 60);
-            editor.setOption("minLines", 5);
-            editor.setAutoScrollEditorIntoView();
+            editor.setOption({
+                maxLines: Infinity
+            });
+
+            var onHeightChange = function(editDiv){
+                var newHeight =
+                      editor.getSession().getScreenLength()
+                      * editor.renderer.lineHeight
+                      + editor.renderer.scrollBar.getWidth();
+                console.log(newHeight);
+                $(editor.container).height(newHeight)
+                editor.resize();
+            }
+
+            // editor.setAutoScrollEditorIntoView();
             editor.renderer.setShowPrintMargin(false);
             editor.getSession().setValue(textarea.val());
             editor.getSession().setUseWrapMode(true);
+            editor.getSession().on('change', onHeightChange);
             editor.getSession().setMode("ace/mode/" + mode);
             editor.setTheme("ace/theme/idle_fingers");
+            onHeightChange();
+
+            if(model){
+                editor.setValue(JSON.stringify(model.toJSON(), null, '\t'));
+            }
 
             // add command for all new editors
             editor.commands.addCommand({
@@ -65,6 +84,7 @@ App.Helpers = {
                         editor.resize()
                 }
             })
+
 
             editor.on('blur', function(){
                 var attr = $(editor.container).next('textarea').data('key');

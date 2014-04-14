@@ -12,10 +12,6 @@ module.exports = function (grunt) {
             nospawn: true,
             livereload: true
         },
-        js: {
-            files: ['js/*.js'],
-            tasks: ['concat']
-        },
 
         sass: {
             options: {
@@ -62,29 +58,6 @@ module.exports = function (grunt) {
       }
     },
 
-    concat: {
-      options: {
-      },
-      dist: {
-        src: [
-          'components/jquery/jquery.js',
-          'components/underscore/underscore.js',
-          'components/backbone-deep-model/lib/underscore.mixin.deepExtend.js',
-          'components/backbone/backbone.js',
-          'components/backbone-deep-model/src/deep-model.js',
-          'components/moment/moment.js',
-          'components/nprogress/nprogress.js',
-          'components/floatLabel/jquery.FloatLabel.js',
-          'components/ace-builds/src-noconflict/ace.js',
-          'js/namespaces.js',
-          'js/helpers.js',
-          'js/main.js',
-        ],
-        dest: 'js/<%= pkg.name %>.js',
-        nonull: true
-      },
-    },
-
     groundskeeper: {
       options: {
         debugger: false,
@@ -112,9 +85,8 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-compass');
   grunt.loadNpmTasks('grunt-contrib-jade');
 
-  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-groundskeeper');
   grunt.loadNpmTasks('grunt-autoprefixer');
 
-  grunt.registerTask('default', ['concat','compass', 'jade', 'autoprefixer', 'watch']);
+  grunt.registerTask('default', ['compass', 'jade', 'autoprefixer', 'watch']);
 };
