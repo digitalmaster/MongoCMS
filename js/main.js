@@ -24,6 +24,7 @@
             App.db.client.save(attr);
         },
 
+        //-- TODO: Implement Undo last
         destroy: function(model, options){
             var id = model.get('_id').toString();
             NProgress.start();
@@ -39,10 +40,11 @@
 
         save: function(model){
             NProgress.start();
-            var value = JSON.flatten(this.changed);
-            var id = model.get('_id').toString();
-            var action = this.isRemoving(value) ? '$unset' : '$set';
-            var operation = {};
+            var value = JSON.flatten(this.changed),
+                id = model.get('_id').toString(),
+                action = this.isRemoving(value) ? '$unset' : '$set',
+                operation = {};
+
             operation[action] = value;
             App.eve.trigger('status:update', 'Saving..');
             NProgress.start();
@@ -91,7 +93,7 @@
         tagName: 'li',
 
         events: {
-           'click': 'showEdit',
+           'click': 'onItemClick',
            'click .remove': 'remove'
         },
 
@@ -110,9 +112,12 @@
             App.Collections.docList.remove(this.model);
         },
 
-        showEdit: function(e){
+        onItemClick: function(e){
             e && e.preventDefault();
+            this.showEdit();
+        },
 
+        showEdit: function(){
             App.Views.docEdit = new App.Views.DocEdit({model: this.model});
             App.Views.docEdit.render();
             App.Collections.docList.setActive(this.model);
@@ -157,10 +162,14 @@
 
         onEditJsonClick: function(e){
             e.preventDefault();
+            $(e.currentTarget).hide();
+            this.$el.find('.btn-add').hide();
+            this.$el.find('.breadcrumbs').css('visibility', 'hidden');
             this.renderJSON();
         },
 
         onRemoveClick: function(e){
+            e.preventDefault();
             var key = $(e.currentTarget).data('key');
 
             var confirmation = confirm('Warning: This will PERMANENTLY delete this value!');
@@ -177,6 +186,7 @@
         },
 
         onBtnAddClick: function(e){
+            e.preventDefault();
             var $btn = this.$el.find('.btn-add'),
                 save = $btn.hasClass('save');
 
@@ -212,6 +222,7 @@
         },
 
         onBreadCrumbClick: function(e){
+            e.preventDefault();
             var target = $(e.currentTarget).data('target');
 
             if(target === '$root'){
@@ -627,6 +638,11 @@
         }
     });
 
+    /*
+      ==========================================================================
+        View Reference: Main Navigation
+      ==========================================================================
+    */
     App.Views.Navigation = BB.View.extend({
         el: '.nav',
 
@@ -637,14 +653,18 @@
         },
 
         onCollectionClick: function(e){
+            e.preventDefault();
             App.eve.trigger('connect:showCollectionSelect');
         },
 
         onConnectionClick: function(e){
+            e.preventDefault();
             App.eve.trigger('connect:show')
         },
 
+        //- TODO: Add Config Panel
         onConfigClick: function(e){
+            e.preventDefault();
             console.log('Config clicked');
         }
     });
@@ -700,7 +720,12 @@
         });
 
         App.eve.on('showStartPage', function(){
-            $('.content').html( App.Helpers.Template('startPageTemplate')() );
+            // Render first doc on start for now
+            if( App.Collections.docList.length ){
+                App.Views.docList.$el.find('li').first().click()
+            }
+            //- TODO: Show a legit start page
+            // $('.content').html( App.Helpers.Template('startPageTemplate')() );
         });
     }
 

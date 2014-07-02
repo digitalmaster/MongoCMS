@@ -13,6 +13,11 @@ module.exports = function (grunt) {
             livereload: true
         },
 
+        js: {
+           files: ['js/*.js'],
+           tasks: ['develop']
+        },
+
         sass: {
             options: {
               livereload: false

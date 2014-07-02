@@ -46,7 +46,7 @@ blockquote {
 }
 
 .center {
-    display: block !important;
+    display: block;
     margin-left: auto !important;
     margin-right: auto !important;
 }
@@ -354,7 +354,6 @@ blockquote {
         box-shadow: 0 2px 0 rgba(210, 211, 212, 0.75);
         margin: 20px 0 65px 0;
         position: relative;
-        overflow: hidden;
 
         h1{
             margin: 0;

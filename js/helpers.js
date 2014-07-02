@@ -40,7 +40,7 @@ App.Helpers = {
                 position: 'absolute',
                 width: textarea.outerWidth(),
                 height: textarea[0].scrollHeight,
-                'class': textarea.attr('class')
+                'class': textarea.attr('class'),
             }).insertBefore(textarea);
 
             textarea.css('display', 'none');
@@ -56,23 +56,40 @@ App.Helpers = {
                       editor.getSession().getScreenLength()
                       * editor.renderer.lineHeight
                       + editor.renderer.scrollBar.getWidth();
-                console.log(newHeight);
                 $(editor.container).height(newHeight)
                 editor.resize();
             }
 
+            var saveJSON = function(){
+                var valString = editor.getSession().getValue();
+
+                // Validate JSON String
+                try {
+                    $.parseJSON( valString )
+                }catch(e){
+                    alert("Invalid JSON: " + e);
+                }
+
+                model.set( $.parseJSON( valString ) );
+            }
+
+            // Show Raw JSON Model
+            if(model){
+                var data_obj = model.toJSON();
+                delete data_obj['_id'];
+                editor.setValue(JSON.stringify(data_obj, null, '\t'), -1);
+            }else{
+                editor.getSession().setValue(textarea.val());
+            }
+
             // editor.setAutoScrollEditorIntoView();
             editor.renderer.setShowPrintMargin(false);
-            editor.getSession().setValue(textarea.val());
             editor.getSession().setUseWrapMode(true);
             editor.getSession().on('change', onHeightChange);
             editor.getSession().setMode("ace/mode/" + mode);
             editor.setTheme("ace/theme/idle_fingers");
             onHeightChange();
 
-            if(model){
-                editor.setValue(JSON.stringify(model.toJSON(), null, '\t'));
-            }
 
             // add command for all new editors
             editor.commands.addCommand({
@@ -85,13 +102,31 @@ App.Helpers = {
                 }
             })
 
+            // Only hook blur handler when not rendering JSON view
+            if(mode == "html"){
+                editor.on('blur', function(){
+                    var attr = $(editor.container).next('textarea').data('key');
+                    var val = editor.getSession().getValue();
 
-            editor.on('blur', function(){
-                var attr = $(editor.container).next('textarea').data('key');
-                var val = editor.getSession().getValue();
+                    App.Views.docEdit.recordAttrChange(attr, val);
+                });
+            }
 
-                App.Views.docEdit.recordAttrChange(attr, val);
-            });
+            // Hook on to save button and store json string
+            if(mode == "json"){
+                var saveBtn = $('.save-raw').show();
+
+                saveBtn.on('click', function(e){
+                    e.preventDefault()
+                    saveJSON()
+                });
+
+                editor.commands.addCommand({
+                    name: "Toggle Fullscreen",
+                    bindKey: "Command-S",
+                    exec: saveJSON
+                });
+            }
         });
     }
 };
