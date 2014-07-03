@@ -12,7 +12,7 @@ body(ontouchstart).clear.md-mode
         #sidebar.column.animate
             //- Header
             .logo.pull-left.clear
-                <h2>MongoMan <span>v0.0.1</span></h2>
+                <h2>MongoCMS <span>v0.0.1</span></h2>
 
             ul.clear.documents
                 li
@@ -27,7 +27,7 @@ body(ontouchstart).clear.md-mode
             .add-new-doc.text-center
                 i.fa +
 
-            footer.clear.text-center &copy; 2013<br>Powered by Node-Webkit
+            footer.clear.text-center &copy; 2014<br>Powered by Node-Webkit
 
         #main.column
             header.clear
@@ -118,8 +118,10 @@ body(ontouchstart).clear.md-mode
             <% if( field.key == '_id') { %>
                 <div class="row id clear">
                     <span class="key"><%= field.key %></span> &nbsp;&nbsp;| &nbsp;&nbsp;<%= field.value.idString %>
-                    <a href="#" class="edit-raw pull-right">{ JSON }</a>
-                    <a href="#" class="save-raw pull-right hide" style="margin-right: 10px">{ SAVE CHANGES }</a>
+                    <ul id="edit-controls">
+                        <li><a href="#" class="edit-raw pull-right"><i class="fa fa-code"></i></a></li>
+                        <li><a href="#" class="save-raw pull-right hide"><i class="fa fa-floppy-o"></i></a></li>
+                    </ul>
                 </div>
             <% }else { %>
                 <div class="row clear editableRow">

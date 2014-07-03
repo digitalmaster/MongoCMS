@@ -71,6 +71,7 @@ App.Helpers = {
                 }
 
                 model.set( $.parseJSON( valString ) );
+                App.Views.docEdit.render();
             }
 
             // Show Raw JSON Model
