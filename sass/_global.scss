@@ -343,7 +343,7 @@ blockquote {
 
 
     .content-wrapper{
-        padding: 20px 36px;
+        padding: 20px 15px;
         margin-top: $header-height;
     }
 
@@ -647,8 +647,7 @@ blockquote {
 .ace_editor {
     border: 1px solid lightgray;
     margin: auto;
-    min-height: 200px;
-    width: 80%;
+    min-height: 100px;
     position: relative !important
 }
 

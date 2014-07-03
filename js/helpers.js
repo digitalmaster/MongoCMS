@@ -38,7 +38,7 @@ App.Helpers = {
 
             var editDiv = $('<div>', {
                 position: 'absolute',
-                width: textarea.outerWidth(),
+                width: 'auto',
                 height: textarea[0].scrollHeight,
                 'class': textarea.attr('class'),
             }).insertBefore(textarea);
@@ -96,9 +96,9 @@ App.Helpers = {
                 name: "Toggle Fullscreen",
                 bindKey: "Command-Shift-F",
                 exec: function(editor) {
-                        $(document.body).toggleClass("fullScreen");
-                        $(editor.container).toggleClass("fullScreen-editor");
-                        editor.resize()
+                    $(document.body).toggleClass("fullScreen");
+                    $(editor.container).toggleClass("fullScreen-editor");
+                    editor.resize();
                 }
             })
 
