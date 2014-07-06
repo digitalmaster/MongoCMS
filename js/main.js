@@ -13,7 +13,6 @@
         initialize: function(attr, options){
             this.on('change', this.save);
             this.on('change:title', this.onTitleChange);
-            this.on('active:toggle', this.toggleActiveClass);
             this.on('remove', this.destroy);
             if(options.save){
                 this.insertNew(this.toJSON());
@@ -40,36 +39,17 @@
 
         save: function(model){
             NProgress.start();
-            var value = JSON.flatten(this.changed),
-                id = model.get('_id').toString(),
-                action = this.isRemoving(value) ? '$unset' : '$set',
-                operation = {};
+            var data = $.parseJSON( JSON.stringify( this.toJSON() ) );
+            delete data['_id']
+            data = JSON.flatten(data);
+            data['_id'] = this.get('_id');
 
-            operation[action] = value;
-            App.eve.trigger('status:update', 'Saving..');
-            NProgress.start();
-            App.db.client.update(
-                { _id: App.mongojs.ObjectId(id) },
-                operation,
-                {
-                    multi: false
-                },
-                function(err){
-                    if(err) console.log(err);
+            App.db.client.save(data, function(err, doc){
+                if(err) console.log(err);
 
-                    App.eve.trigger('status:update', 'Saved', true);
-                    NProgress.done();
-                }
-            );
-        },
-
-        isRemoving: function(obj){
-            for(var key in obj) {
-                if(typeof obj[key] === 'undefined') {
-                  return true;
-                }
-              }
-            return false;
+                App.eve.trigger('status:update', 'Saved', true);
+                NProgress.done();
+            });
         },
 
         onTitleChange: function(model){
@@ -77,11 +57,6 @@
             var newTitle = model.get('title');
             App.Views.docList.$el.find('*[data-id="' + id + '"]').find('.title').text(newTitle);
         },
-
-        toggleActiveClass: function(model){
-            var id = model.get('_id').toString();
-            App.Views.docList.$el.find('*[data-id="' + id + '"]').toggleClass("active");
-        }
     });
 
     /*
@@ -114,13 +89,14 @@
 
         onItemClick: function(e){
             e && e.preventDefault();
+            App.Views.docList.$el.find('a.active').removeClass('active');
+            this.$el.find('a').addClass("active");
             this.showEdit();
         },
 
         showEdit: function(){
             App.Views.docEdit = new App.Views.DocEdit({model: this.model});
             App.Views.docEdit.render();
-            App.Collections.docList.setActive(this.model);
         },
 
         render: function(){
@@ -368,17 +344,7 @@
                     App.eve.trigger('status:update','Docs Received', true);
                 }
             });
-        },
-
-        setActive: function(model){
-            if(this.active){
-                this.active.trigger('active:toggle', this.active);
-            }
-
-            this.active = model;
-            this.active.trigger('active:toggle', this.active );
         }
-
     });
 
     /*
@@ -669,7 +635,6 @@
         }
     });
 
-
     App.init = function(initData){
         App.Views.connect = new App.Views.Connect();
         App.Views.navigation = new App.Views.Navigation();
@@ -734,5 +699,8 @@
 process.on('uncaughtException', function(err) {
     console.log("Uncaught exception!", err);
 });
+
+App.Helpers.initNativeKeyboardShortcuts();
+App.Helpers.initRighClickMenu();
 App.init();
 $('body').css('min-height', $(window).height()); // I know.. i'm ashamed

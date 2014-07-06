@@ -28,6 +28,60 @@ App.Helpers = {
         return false;
     },
 
+    initNativeKeyboardShortcuts: function() {
+        key.filter = function(){ return true } // Don't ignore input, textareas and selects
+
+        // Copy
+        key('⌘+c, ctrl+c', function(){ document.execCommand("copy") } );
+        // Past
+        key('⌘+v, ctrl+v', function(){ document.execCommand("paste") } );
+        // Cut
+        key('⌘+x, ctrl+x', function(){ document.execCommand("cut") } );
+    },
+
+    initRighClickMenu: function(){
+        $(function() {
+          function Menu(cutLabel, copyLabel, pasteLabel) {
+            var gui = require('nw.gui')
+              , menu = new gui.Menu()
+
+              , cut = new gui.MenuItem({
+                label: cutLabel || "Cut"
+                , click: function() {
+                  document.execCommand("cut");
+                }
+              })
+
+              , copy = new gui.MenuItem({
+                label: copyLabel || "Copy"
+                , click: function() {
+                  document.execCommand("copy");
+                }
+              })
+
+              , paste = new gui.MenuItem({
+                label: pasteLabel || "Paste"
+                , click: function() {
+                  document.execCommand("paste");
+                }
+              })
+            ;
+
+            menu.append(cut);
+            menu.append(copy);
+            menu.append(paste);
+
+            return menu;
+          }
+
+          var menu = new Menu(/* pass cut, copy, paste labels if you need i18n*/);
+          $(document).on("contextmenu", function(e) {
+            e.preventDefault();
+            menu.popup(e.originalEvent.x, e.originalEvent.y);
+          });
+        });
+    },
+
     renderAce: function(model){
         ace.config.set("basePath", "components/ace-builds/src-noconflict/");
         // Based on: https://gist.github.com/duncansmart/5267653
@@ -61,16 +115,22 @@ App.Helpers = {
             }
 
             var saveJSON = function(){
-                var valString = editor.getSession().getValue();
+                var valString = editor.getSession().getValue(),
+                    newObject;
 
                 // Validate JSON String
                 try {
-                    $.parseJSON( valString )
+                    newObject = $.parseJSON( valString )
                 }catch(e){
                     alert("Invalid JSON: " + e);
                 }
 
-                model.set( $.parseJSON( valString ) );
+                // Replace model with new data (keep _id)
+                var id = model.get('_id')
+                model.clear({silent: true});
+                model.set({'_id': id}, {silent: true})
+                model.set( newObject );
+
                 App.Views.docEdit.render();
             }
 

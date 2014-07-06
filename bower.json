@@ -10,6 +10,7 @@
     "nprogress": "~0.1.2",
     "floatLabel": "https://github.com/digitalmaster/FloatLabel.js.git",
     "ace-builds": "https://github.com/ajaxorg/ace-builds.git",
-    "backbone-deep-model": "~0.10.4"
+    "backbone-deep-model": "~0.10.4",
+    "keymaster": "~1.6.2",
   }
 }

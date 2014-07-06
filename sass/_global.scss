@@ -248,7 +248,10 @@ blockquote {
                     overflow: hidden;
                     position: relative;
 
-                    &:hover,
+                    &:hover{
+                        background-color: white;
+                    }
+
                     &.active{
                         background-color: white;
                         box-shadow: inset 3px 0 0px $flat-blue;
