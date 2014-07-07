@@ -123,6 +123,7 @@ App.Helpers = {
                     newObject = $.parseJSON( valString )
                 }catch(e){
                     alert("Invalid JSON: " + e);
+                    return;
                 }
 
                 // Replace model with new data (keep _id)

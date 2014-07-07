@@ -41,7 +41,6 @@
             NProgress.start();
             var data = $.parseJSON( JSON.stringify( this.toJSON() ) );
             delete data['_id']
-            data = JSON.flatten(data);
             data['_id'] = this.get('_id');
 
             App.db.client.save(data, function(err, doc){
@@ -287,18 +286,22 @@
             $('.content').remove();
 
             data = this.model.toJSON();
+            delete data['_id'];
+
+            // Navigate
             if(this.treeLevels.length > 0){
                 data = Object.getByString(data, this.treeLevels.toString());
             }
 
-            // Add id string at root
-            if(this.treeLevels.length < 1){
-                data._id = this.model.toJSON()._id;
-                data._id.idString = this.model.get('_id').toString();
-            }
-
             data = this.toArray(data);
 
+            // Add ID String row
+            data.unshift({
+                key : '_id',
+                value : this.model.get('_id').toString()
+            });
+
+            // Add datat types (Number, bool, html etc)
             data = this.addDataTypes(data);
 
             //Append to DOM
