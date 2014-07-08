@@ -81,6 +81,26 @@ module.exports = function (grunt) {
             'css/main.css': 'css/main.css'
         }
       }
+    },
+
+    nodewebkit: {
+        options: {
+            build_dir: './builds',
+            mac: true,
+            win: true,
+            linux32: false,
+            linux64: false,
+            mac_icns: './icons/mcms.icns'
+        },
+        src: [
+            './**/*',
+            '!./builds/**/*',
+            '!./node_modules/**/*',
+            './node_modules/mongodb/**/*',
+            './node_modules/mongojs/**/*',
+            '!./components/ace-builds/**/*',
+            './components/ace-builds/src-noconflict/**/*'
+        ]
     }
 
   });
@@ -89,9 +109,10 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-compass');
   grunt.loadNpmTasks('grunt-contrib-jade');
-
   grunt.loadNpmTasks('grunt-groundskeeper');
   grunt.loadNpmTasks('grunt-autoprefixer');
+  grunt.loadNpmTasks('grunt-node-webkit-builder');
 
   grunt.registerTask('default', ['compass', 'jade', 'autoprefixer', 'watch']);
+  grunt.registerTask('build', ['nodewebkit']);
 };
