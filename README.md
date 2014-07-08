@@ -1,7 +1,7 @@
 ## Synopsis
 
 MongoCMS is just a very simple content editor for MongoDB collections. It makes manging rich content types very simple, clean and elegant. 
-![](https://raw.github.com/digitalmaster/MongoCMS/master/img/screenshots/doc-edit.png)
+![](https://raw.github.com/digitalmaster/MongoCMS/master/img/screenshots/doc-edit-2.png)
 ## Motivation
 
 My primary motivation for building this tool was my personal blog (www.josebrowne.com). My process for updating HTML content was very painful (encode, decode, encode, decode..etc). Manually adding dates was also surprisingly tricky (ex ISODate("2011-04-24T09:00:00.000Z"). I tried EVERY tool out there and none solved this problem for me. I had two weeks off so I decided to give it a shot.
