@@ -14,7 +14,8 @@
     "width": 1270,
     "height": 800,
     "min_width": 400,
-    "min_height": 200
+    "min_height": 200,
+    "icon": "./icons/mcms.png"
   },
   "dependencies": {
     "mongodb": "~1",
@@ -29,7 +30,6 @@
     "grunt-contrib-concat": "~0.4.0",
     "grunt-contrib-uglify": "~0.5.0",
     "grunt-autoprefixer": "~0.8.1",
-    "grunt-groundskeeper": "~0.1.9",
     "grunt-contrib-jade": "~0.12.0",
     "grunt-contrib-compass": "~0.9.0",
     "grunt-node-webkit-builder": "~0.1.21"

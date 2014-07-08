@@ -706,4 +706,5 @@ process.on('uncaughtException', function(err) {
 App.Helpers.initNativeKeyboardShortcuts();
 App.Helpers.initRighClickMenu();
 App.init();
+window.title = 'test'
 $('body').css('min-height', $(window).height()); // I know.. i'm ashamed

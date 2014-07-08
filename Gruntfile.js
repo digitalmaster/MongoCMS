@@ -63,18 +63,6 @@ module.exports = function (grunt) {
       }
     },
 
-    groundskeeper: {
-      options: {
-        debugger: false,
-        console: false
-      },
-      compile: {
-        files: {
-          'js/<%= pkg.name %>.js': 'js/<%= pkg.name %>.js'
-        }
-      }
-    },
-
     autoprefixer: {
       dist: {
         files: {
@@ -90,7 +78,7 @@ module.exports = function (grunt) {
             win: true,
             linux32: false,
             linux64: false,
-            mac_icns: './icons/mcms.icns'
+            mac_icns: './icons/mcms.icns',
         },
         src: [
             './**/*',
@@ -109,7 +97,6 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-compass');
   grunt.loadNpmTasks('grunt-contrib-jade');
-  grunt.loadNpmTasks('grunt-groundskeeper');
   grunt.loadNpmTasks('grunt-autoprefixer');
   grunt.loadNpmTasks('grunt-node-webkit-builder');
 
