@@ -41,6 +41,7 @@
             NProgress.start();
             var data = $.parseJSON( JSON.stringify( this.toJSON() ) );
             delete data['_id']
+            data = this.modelProcessor(data)
             data['_id'] = this.get('_id');
 
             App.db.client.save(data, function(err, doc){
@@ -49,6 +50,23 @@
                 App.eve.trigger('status:update', 'Saved', true);
                 NProgress.done();
             });
+        },
+
+        modelProcessor: function(obj) {
+            function loopThrough(obj)
+            {
+                for (var k in obj)
+                {
+                    if (typeof obj[k] == "object" && obj[k] !== null)
+                        loopThrough(obj[k]);
+                    else
+                        if (typeof obj[k] == "string" && Date.parse(obj[k])){
+                            obj[k] = new Date( Date.parse(obj[k]) );
+                        }
+                }
+            }
+            loopThrough(obj);
+            return obj
         },
 
         onTitleChange: function(model){
