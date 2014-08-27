@@ -22,127 +22,131 @@ module.exports = function (grunt) {
             },
 
             js: {
-             files: ['js/*.js'],
-             tasks: ['develop']
-         },
+                files: ['js/*.js'],
+                tasks: ['develop']
+            },
 
-         sass: {
+            sass: {
+                options: {
+                    livereload: false
+                },
+                files: ['sass/*.{scss,sass}'],
+                tasks: ['compass'],
+            },
+
+            css: {
+                options: {
+                    livereload: true,
+                    nospawn: true,
+                    interrupt: true
+                },
+                tasks: ['compass', 'autoprefixer'],
+                files: ['css/main.css']
+            },
+
+            jade: {
+                files: ['jade/*.jade'],
+                tasks: 'jade'
+            }
+        },
+
+        compass: {
+            dist: {
+                options: {
+                    sassDir: 'sass',
+                    cssDir: 'css',
+                }
+            }
+        },
+
+        jade: {
+            compile: {
+                options:{
+                    pretty: true
+                }
+            }
+        },
+
+        files: {
+          'main.html': ['jade/main.jade']
+        },
+
+        autoprefixer: {
+            dist: {
+                files: {
+                    'css/main.css': 'css/main.css'
+                }
+            }
+        },
+
+        nodewebkit: {
             options: {
-              livereload: false
-          },
-          files: ['sass/*.{scss,sass}'],
-          tasks: ['compass'],
-      },
-
-      css: {
-        options: {
-            livereload: true,
-            nospawn: true,
-            interrupt: true
+                build_dir: dest,
+                mac: true,
+                win: true,
+                linux32: false,
+                linux64: false,
+                mac_icns: './icons/mcms.icns',
+            },
+            src: [
+            './**/*',
+            '!./builds/**/*',
+            '!./node_modules/**/*',
+            './node_modules/mongodb/**/*',
+            './node_modules/mongojs/**/*',
+            '!./components/ace-builds/**/*',
+            './components/ace-builds/src-noconflict/**/*'
+            ]
         },
-        tasks: ['compass', 'autoprefixer'],
-        files: ['css/main.css']
-    },
 
-    jade: {
-        files: ['jade/*.jade'],
-        tasks: 'jade'
-    }
-},
+        clean:{
+            main: ['test/app']
+        },
 
-compass: {
-    dist: {
-        options: {
-            sassDir: 'sass',
-            cssDir: 'css',
+        compress:{
+            win:{
+                options: {
+                    mode: 'zip',
+                    archive: dest + '/releases/updapp/win/updapp.zip'
+                },
+                expand: true,
+                cwd: dest + '/releases/updapp/win/updapp',
+                src: ['**/**'],
+                dest: '/updapp'
+            },
+            linux32:{
+                options: {
+                    mode: 'tgz',
+                    archive: dest + '/releases/updapp/linux32/updapp.tar.gz'
+                },
+                expand: true,
+                cwd: dest + '/releases/updapp/linux32/updapp',
+                src: ['**/**'],
+                dest: 'updapp/'
+            },
+            linux64:{
+                options: {
+                    mode: 'tgz',
+                    archive: dest + '/releases/updapp/linux64/updapp.tar.gz'
+                },
+                expand: true,
+                cwd: dest + '/releases/updapp/linux64/updapp',
+                src: ['**/**'],
+                dest: 'updapp/'
+            }
+        },
+
+        copy:{
+            win:{
+                src: 'tools/*',
+                dest: dest + '/releases/updapp/win/updapp/'
+            }
         }
-    }
-},
-
-jade: {
-  compile: {
-    options:{
-      pretty: true,
-      data: { test: 'test'}
-  },
-  files: {
-      'main.html': ['jade/main.jade']
-  }
-}
-},
-
-autoprefixer: {
-  dist: {
-    files: {
-        'css/main.css': 'css/main.css'
-    }
-}
-},
-
-nodewebkit: {
-    options: {
-        build_dir: dest,
-        mac: true,
-        win: true,
-        linux32: false,
-        linux64: false,
-        mac_icns: './icons/mcms.icns',
-    },
-    src: [
-    './**/*',
-    '!./builds/**/*',
-    '!./node_modules/**/*',
-    './node_modules/mongodb/**/*',
-    './node_modules/mongojs/**/*',
-    '!./components/ace-builds/**/*',
-    './components/ace-builds/src-noconflict/**/*'
-    ]
-},
-clean:{
-    main: ['test/app']
-},
-compress:{
-    win:{
-        options: {
-            mode: 'zip',
-            archive: dest + '/releases/updapp/win/updapp.zip'
-        },
-        expand: true,
-        cwd: dest + '/releases/updapp/win/updapp',
-        src: ['**/**'],
-        dest: '/updapp'
-    },
-    linux32:{
-        options: {
-         mode: 'tgz',
-         archive: dest + '/releases/updapp/linux32/updapp.tar.gz'
-     },
-     expand: true,
-     cwd: dest + '/releases/updapp/linux32/updapp',
-     src: ['**/**'],
-     dest: 'updapp/'
- },
- linux64:{
-    options: {
-        mode: 'tgz',
-        archive: dest + '/releases/updapp/linux64/updapp.tar.gz'
-    },
-    expand: true,
-    cwd: dest + '/releases/updapp/linux64/updapp',
-    src: ['**/**'],
-    dest: 'updapp/'
-}
-},
-copy:{
-    win:{
-        src: 'tools/*',
-        dest: dest + '/releases/updapp/win/updapp/'
-    }
-}
 
 });
 
 grunt.loadNpmTasks('grunt-develop');
+grunt.loadNpmTasks('grunt-browserify');
 grunt.loadNpmTasks('grunt-contrib-watch');
 grunt.loadNpmTasks('grunt-contrib-compass');
 grunt.loadNpmTasks('grunt-contrib-jade');
