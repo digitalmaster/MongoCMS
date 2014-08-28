@@ -1,28 +1,25 @@
-define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'helpers',
-    'views/connect',
-    'views/navigation',
-    'views/docList',
-    'views/statusPane',
-    'collections/documents'
-], function($, _, BB, Helpers, ConnectView, NavigationView, DocListView, StatusView, DocCollection){
-    var init = function(){
-        // Init Collection
-        var docList = new DocCollection();
+'use strict';
 
-        // Init Collection View
-        var docListView = new DocListView({ collection: docList });
+var ConnectView    = require('./views/connect'),
+    NavigationView = require('./views/navigation'),
+    DocListView    = require('./views/docList'),
+    StatusView     = require('./views/statusPane'),
+    DocCollection  = require('./collections/documents');
 
-        Helpers.initNativeKeyboardShortcuts();
-        Helpers.initRighClickMenu();
-        // App.init();
-        $('body').css('min-height', $(window).height()); // I know.. i'm ashamed
-    };
+var init = function(){
+    // Init Collection
+    var docList = new DocCollection();
 
-    return {
-        init: init
-    }
-});
+    // Init Collection View
+    var docListView = new DocListView({ collection: docList });
+
+    Helpers.initNativeKeyboardShortcuts();
+    Helpers.initRighClickMenu();
+    // App.init();
+    $('body').css('min-height', $(window).height()); // I know.. i'm ashamed
+};
+
+module.exports = {
+    init: init
+}
+

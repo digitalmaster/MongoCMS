@@ -10,6 +10,17 @@ var is64 = process.arch == 'x64';
 var request = require('request');
 
 module.exports = function (grunt) {
+    grunt.loadNpmTasks('grunt-develop');
+    grunt.loadNpmTasks('grunt-browserify');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-compass');
+    grunt.loadNpmTasks('grunt-contrib-jade');
+    grunt.loadNpmTasks('grunt-autoprefixer');
+    grunt.loadNpmTasks('grunt-node-webkit-builder');
+    grunt.loadNpmTasks('grunt-contrib-compress');
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-clean');
+
     var dest = grunt.option('dest') || './builds';
 
     grunt.initConfig({
@@ -22,8 +33,8 @@ module.exports = function (grunt) {
             },
 
             js: {
-                files: ['js/*.js'],
-                tasks: ['develop']
+                files: ['js/**/*.js'],
+                tasks: ['browserify:dev']
             },
 
             sass: {
@@ -50,6 +61,14 @@ module.exports = function (grunt) {
             }
         },
 
+        browserify: {
+            dev: {
+                files: { 'js/bundle.js': ['js/main.js'] },
+                options: { bundleOptions: { debug: true } }
+            }
+
+        },
+
         compass: {
             dist: {
                 options: {
@@ -63,12 +82,12 @@ module.exports = function (grunt) {
             compile: {
                 options:{
                     pretty: true
-                }
-            }
-        },
+                },
 
-        files: {
-          'main.html': ['jade/main.jade']
+                files: {
+                  'main.html': ['jade/main.jade']
+                },
+            },
         },
 
         autoprefixer: {
@@ -145,17 +164,6 @@ module.exports = function (grunt) {
 
 });
 
-grunt.loadNpmTasks('grunt-develop');
-grunt.loadNpmTasks('grunt-browserify');
-grunt.loadNpmTasks('grunt-contrib-watch');
-grunt.loadNpmTasks('grunt-contrib-compass');
-grunt.loadNpmTasks('grunt-contrib-jade');
-grunt.loadNpmTasks('grunt-autoprefixer');
-grunt.loadNpmTasks('grunt-node-webkit-builder');
-grunt.loadNpmTasks('grunt-contrib-compress');
-grunt.loadNpmTasks('grunt-contrib-copy');
-grunt.loadNpmTasks('grunt-contrib-clean')
-
 grunt.registerTask('packageMac', function(){
     var done = this.async();
     console.log('packaging...', 'hdiutil create -format UDZO -srcfolder ' + dest + '/releases/updapp/mac/updapp.app ' + dest + '/releases/updapp/mac/updapp.dmg');
@@ -196,7 +204,7 @@ grunt.registerTask('version', function(){
 }
 });
 
-grunt.registerTask('default', ['compass', 'jade', 'autoprefixer', 'watch']);
+grunt.registerTask('default', ['compass', 'jade', 'autoprefixer', 'browserify:dev', 'watch']);
 // grunt.registerTask('build', ['nodewebkit']);
 
 var buildFlow = ['nodewebkit'];

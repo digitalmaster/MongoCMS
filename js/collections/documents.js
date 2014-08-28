@@ -1,52 +1,52 @@
-define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'helpers',
-    'db',
-    'events',
-    'models/document',
-    'nprogress'
-], function($, _, BB, Helpers, DB, EVE, DocumentModel){
+'use strict';
 
-    return BB.Collection.extend({
-        initialize: function(){
-            _.bindAll(this, 'onConnect');
-            EVE.on('status:connected', this.onConnect)
-        },
+var DB      = require('../db'),
+    EVE     = require('../events'),
+    DocumentModel = require('../models/document');
 
-        model: DocumentModel,
+module.exports = BB.Collection.extend({
+    initialize: function(){
+        _.bindAll(this, 'onConnect', 'onRemove');
 
-        db: null,
+        EVE.on('status:connected', this.onConnect);
+        EVE.on('collection:remove', this.onRemove);
+    },
 
-        active: null,
+    model: DocumentModel,
 
-        onConnect: function(){
-            var that = this;
-            this.fetch(function(results){
-                NProgress.done();
-                // Add data to collection
-                that.reset(results);
-                EVE.trigger('showStartPage');
+    db: null,
 
-            });
-        },
+    active: null,
 
-        fetch: function(success){
-            var that = this;
-            EVE.trigger('status:update', 'Getting Docs..');
-            NProgress.start();
+    onConnect: function(){
+        var that = this;
+        this.fetch(function(results){
+            NProgress.done();
+            // Add data to collection
+            that.reset(results);
+            EVE.trigger('showStartPage');
 
-            if(!DB) console.error('No database connection. Cannot fetch data.');
+        });
+    },
 
-            DB.collection.find().sort({ created: -1 }).toArray( function (err, results) {
-                if(err){
-                    console.error('Could not fetch collection', err);
-                }else{
-                    success.call(this, results);
-                    EVE.trigger('status:update','Docs Received', true);
-                }
-            });
-        }
-    });
+    fetch: function(success){
+        var that = this;
+        EVE.trigger('status:update', 'Getting Docs..');
+        NProgress.start();
+
+        if(!DB) console.error('No database connection. Cannot fetch data.');
+
+        DB.collection.find().sort({ created: -1 }).toArray( function (err, results) {
+            if(err){
+                console.error('Could not fetch collection', err);
+            }else{
+                success.call(this, results);
+                EVE.trigger('status:update','Docs Received', true);
+            }
+        });
+    },
+
+    onRemove: function(model){
+        this.remove(model);
+    }
 });

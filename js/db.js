@@ -1,8 +1,8 @@
-define([], function(){
-    return {
-        module: requireNode('mongojs'),
-        client: null,
-        collection: null,
-    }
+'use strict';
 
-});
+module.exports = {
+    module: requireNode('mongojs'),
+    client: null,
+    collection: null,
+};
+

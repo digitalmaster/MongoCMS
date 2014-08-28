@@ -1,3 +1,3 @@
-define([], function(){
-    return requireNode('nw.gui');
-});
+'use strict';
+
+module.exports = requireNode('nw.gui');

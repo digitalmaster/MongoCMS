@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "dependencies": {
     "jquery": "~1.10.2",
-    "backbone-amd": "~1.0.0",
-    "underscore-amd": "~1.5.1",
+    "backbone": "~1.0.0",
+    "underscore": "~1.7.0",
     "font-awesome": "~4.0",
     "moment": "~2.2.1",
     "nprogress": "~0.1.2",
@@ -12,7 +12,6 @@
     "ace-builds": "https://github.com/ajaxorg/ace-builds.git",
     "backbone-deep-model": "~0.10.4",
     "keymaster": "~1.6.2",
-    "requirejs": null,
     "stacktrace": "~0.6.0"
   }
 }

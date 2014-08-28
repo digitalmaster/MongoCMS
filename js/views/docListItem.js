@@ -1,52 +1,46 @@
-define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'helpers',
-    'views/docEdit'
-], function($, _, BB, Helpers, DocEditView){
-    return BB.View.extend({
-        tagName: 'li',
+var EVE         = require('../events'),
+    DocEditView = require('./docEdit')
 
-        events: {
-           'click': 'onItemClick',
-           'click .remove': 'remove'
-        },
+module.exports = BB.View.extend({
+    tagName: 'li',
 
-        className: 'clear',
+    events: {
+       'click': 'onItemClick',
+       'click .remove': 'remove'
+    },
 
-        template: Helpers.Template('listItemTemplate'),
+    className: 'clear',
 
-        remove: function(e){
-            e.preventDefault();
-            e.stopImmediatePropagation();
+    template: Helpers.Template('listItemTemplate'),
 
-            var confirmation = confirm('Warning: This will PERMANENTLY delete this record!');
-            if(!confirmation) return;
+    remove: function(e){
+        e.preventDefault();
+        e.stopImmediatePropagation();
 
-            alert('find way to reach collection');
-            // this.$el.remove();
-            // App.Collections.docList.remove(this.model);
-        },
+        var confirmation = confirm('Warning: This will PERMANENTLY delete this record!');
+        if(!confirmation) return;
 
-        onItemClick: function(e){
-            e && e.preventDefault();
-            this.$el.parent().find('a.active').removeClass('active');
-            this.$el.find('a').addClass("active");
-            this.showEdit();
-        },
+        this.$el.remove();
+        EVE.trigger('collection:remove', this.model);
+    },
 
-        showEdit: function(){
-            DocEditView.setModel(this.model);
-            DocEditView.render();
-        },
+    onItemClick: function(e){
+        e && e.preventDefault();
+        this.$el.parent().find('a.active').removeClass('active');
+        this.$el.find('a').addClass("active");
+        this.showEdit();
+    },
 
-        render: function(){
-            var data = this.model.toJSON();
-            data.id = this.model.get('_id').toString();
+    showEdit: function(){
+        DocEditView.setModel(this.model);
+        DocEditView.render();
+    },
 
-            this.$el.html( this.template(data) );
-            return this;
-        }
-    });
+    render: function(){
+        var data = this.model.toJSON();
+        data.id = this.model.get('_id').toString();
+
+        this.$el.html( this.template(data) );
+        return this;
+    }
 });

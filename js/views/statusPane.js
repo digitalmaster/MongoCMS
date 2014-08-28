@@ -1,70 +1,64 @@
-define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'helpers',
-    'db',
-    'events',
-], function($, _, BB, Helpers, DB, EVE){
+'use strict';
 
-    return BB.View.extend({
-        initialize: function(){
-            _.bindAll( this , 'monitorStatus', 'setStatus');
-            setInterval(this.monitorStatus, 5000);
+var DB = require('../db'),
+    EVE = require('../events');
 
-            EVE.on('status:update', this.setStatus )
-        },
+module.exports = BB.View.extend({
+    initialize: function(){
+        _.bindAll( this , 'monitorStatus', 'setStatus');
+        setInterval(this.monitorStatus, 5000);
 
-        el: '.status-pane',
+        EVE.on('status:update', this.setStatus )
+    },
 
-        events: {
-            'click .connection' : 'onConnectionClick'
-        },
+    el: '.status-pane',
 
-        monitorStatus: function(){
-            if (!DB.client) return;
+    events: {
+        'click .connection' : 'onConnectionClick'
+    },
 
-            var timmer = null;
-            var that = this;
-            DB.client.runCommand({ping:1}, function(err, res){
-                clearTimeout(timmer);
-                timmer = null;
-                if(!err && res.ok){
-                    that.updateConnectionStatus(true);
-                }else{
-                    that.updateConnectionStatus(false);
-                }
-            });
-            if(!timmer){
-                timmer = setTimeout(function(){
-                    that.updateConnectionStatus(false);
-                }, 3500);
+    monitorStatus: function(){
+        if (!DB.client) return;
+
+        var timmer = null;
+        var that = this;
+        DB.client.runCommand({ping:1}, function(err, res){
+            clearTimeout(timmer);
+            timmer = null;
+            if(!err && res.ok){
+                that.updateConnectionStatus(true);
+            }else{
+                that.updateConnectionStatus(false);
             }
-        },
-
-        updateConnectionStatus: function(isConnected){
-            if(!_.isBoolean(isConnected)) console.error('Expected boolean value');
-
-            var statText = this.$el.find('.connection');
-            if(isConnected) statText.removeClass('offline').text('Connected');
-            else statText.addClass('offline').text('Offline');
-        },
-
-        setStatus: function(msg, reset){
-            var that = this;
-
-            this.$el.find('.status').text(msg);
-
-            if(reset){
-                setTimeout(function(){
-                    that.$el.find('.status').text('Idle');
-                }, 2000);
-            }
-        },
-
-        onConnectionClick: function(){
-            EVE.trigger('connect:show');
+        });
+        if(!timmer){
+            timmer = setTimeout(function(){
+                that.updateConnectionStatus(false);
+            }, 3500);
         }
-    });
+    },
 
+    updateConnectionStatus: function(isConnected){
+        if(!_.isBoolean(isConnected)) console.error('Expected boolean value');
+
+        var statText = this.$el.find('.connection');
+        if(isConnected) statText.removeClass('offline').text('Connected');
+        else statText.addClass('offline').text('Offline');
+    },
+
+    setStatus: function(msg, reset){
+        var that = this;
+
+        this.$el.find('.status').text(msg);
+
+        if(reset){
+            setTimeout(function(){
+                that.$el.find('.status').text('Idle');
+            }, 2000);
+        }
+    },
+
+    onConnectionClick: function(){
+        EVE.trigger('connect:show');
+    }
 });

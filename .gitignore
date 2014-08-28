@@ -6,7 +6,7 @@ dist
 .tmp
 
 components
-js/MongoCMS.js
+js/bundle.js
 css
 builds
 main.html

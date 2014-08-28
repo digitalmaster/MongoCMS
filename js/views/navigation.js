@@ -1,35 +1,31 @@
-define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'events',
-], function($, _, BB, EVE){
+'use strict';
 
-     var NavView =  BB.View.extend({
-        el: '.nav',
+var EVE = require('../events');
 
-        events: {
-            'click a[data-target="collection"]': 'onCollectionClick',
-            'click a[data-target="connect"]': 'onConnectionClick',
-            'click a[data-target="config"]': 'onConfigClick'
-        },
+var NavView =  BB.View.extend({
+    el: '.nav',
 
-        onCollectionClick: function(e){
-            e.preventDefault();
-            EVE.trigger('connect:showCollectionSelect');
-        },
+    events: {
+        'click a[data-target="collection"]': 'onCollectionClick',
+        'click a[data-target="connect"]': 'onConnectionClick',
+        'click a[data-target="config"]': 'onConfigClick'
+    },
 
-        onConnectionClick: function(e){
-            e.preventDefault();
-            EVE.trigger('connect:show')
-        },
+    onCollectionClick: function(e){
+        e.preventDefault();
+        EVE.trigger('connect:showCollectionSelect');
+    },
 
-        //- TODO: Add Config Panel
-        onConfigClick: function(e){
-            e.preventDefault();
-            console.log('Config clicked');
-        }
-    });
+    onConnectionClick: function(e){
+        e.preventDefault();
+        EVE.trigger('connect:show')
+    },
 
-    return new NavView;
+    //- TODO: Add Config Panel
+    onConfigClick: function(e){
+        e.preventDefault();
+        console.log('Config clicked');
+    }
 });
+
+module.exports = new NavView;
