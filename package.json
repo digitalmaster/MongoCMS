@@ -49,5 +49,5 @@
         "grunt-contrib-clean": "~0.6.0",
         "grunt-browserify": "~2.1.4",
         "browserify": "~5.10.1"
-    },
+    }
 }
