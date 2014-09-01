@@ -1,13 +1,16 @@
 'use strict';
 
 var exec = require('child_process').exec;
-
-var isWin = /^win/.test(process.platform);
-var isMac = /^darwin/.test(process.platform);
-var isLinux = /^linux/.test(process.platform);
-var is32 = process.arch == 'ia32';
-var is64 = process.arch == 'x64';
+var fs = require('fs');
 var request = require('request');
+var path = require('path');
+
+var isWin   = /^win/.test(process.platform);
+var isMac   = /^darwin/.test(process.platform);
+var isLinux = /^linux/.test(process.platform);
+var is32    = process.arch == 'ia32';
+var is64    = process.arch == 'x64';
+var pkg     = null;
 
 module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-develop');
@@ -19,13 +22,21 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-node-webkit-builder');
     grunt.loadNpmTasks('grunt-contrib-compress');
     grunt.loadNpmTasks('grunt-contrib-copy');
-    grunt.loadNpmTasks('grunt-contrib-clean');
 
+    pkg = grunt.file.readJSON('package.json')
     var dest = grunt.option('dest') || './builds';
+    var version_dir = '/MongoCMS\\ -\\ v' + pkg.version;
+
+    var alter_pkg = function(obj){
+        var path = './package.json'
+        var pkg = require(path);
+        for(var i in obj){
+            pkg[i] = obj[i];
+        }
+        fs.writeFileSync(path, JSON.stringify(pkg, null, 4));
+    }
 
     grunt.initConfig({
-        pkg: grunt.file.readJSON('package.json'),
-
         watch: {
             options: {
                 nospawn: true,
@@ -100,115 +111,83 @@ module.exports = function (grunt) {
 
         nodewebkit: {
             options: {
+                version: '0.8.6',
                 build_dir: dest,
                 mac: true,
                 win: true,
                 linux32: false,
                 linux64: false,
-                mac_icns: './icons/mcms.icns',
+                macIcns: './icons/mcms.icns',
+                winIco: './icons/mcms.ico',
+                buildType: 'versioned',
             },
             src: [
-            './**/*',
-            '!./builds/**/*',
-            '!./node_modules/**/*',
-            './node_modules/mongodb/**/*',
-            './node_modules/mongojs/**/*',
-            '!./components/ace-builds/**/*',
-            './components/ace-builds/src-noconflict/**/*'
+                './**/*',
+                '!./builds/**/*',
+                '!./cache/**/*',
+                '!./node_modules/**/*',
+                './node_modules/mongodb/**/*',
+                './node_modules/mongojs/**/*',
+                './node_modules/node-webkit-updater/**/*',
+                '!./components/ace-builds/**/*',
+                './components/ace-builds/src-noconflict/**/*'
             ]
-        },
+        }
+    });
 
-        clean:{
-            main: ['test/app']
-        },
+    grunt.registerTask('packageMac', function(){
+        var done = this.async();
+        var cmd = 'hdiutil create -ov -format UDZO -srcfolder ' + dest + version_dir + '/osx/MongoCMS.app ' + dest + version_dir + '/osx/MongoCMS.dmg';
+        console.log(cmd);
 
-        compress:{
-            win:{
-                options: {
-                    mode: 'zip',
-                    archive: dest + '/releases/updapp/win/updapp.zip'
-                },
-                expand: true,
-                cwd: dest + '/releases/updapp/win/updapp',
-                src: ['**/**'],
-                dest: '/updapp'
-            },
-            linux32:{
-                options: {
-                    mode: 'tgz',
-                    archive: dest + '/releases/updapp/linux32/updapp.tar.gz'
-                },
-                expand: true,
-                cwd: dest + '/releases/updapp/linux32/updapp',
-                src: ['**/**'],
-                dest: 'updapp/'
-            },
-            linux64:{
-                options: {
-                    mode: 'tgz',
-                    archive: dest + '/releases/updapp/linux64/updapp.tar.gz'
-                },
-                expand: true,
-                cwd: dest + '/releases/updapp/linux64/updapp',
-                src: ['**/**'],
-                dest: 'updapp/'
+        exec(cmd, function(error, stdout, stderr){
+            if(stdout) console.log('stdout: ' + stdout);
+            if(stderr) console.log('stderr: ' + stderr);
+            if (error !== null) {
+                console.log('exec error: ' + error);
             }
-        },
+            done();
+        });
+    });
 
-        copy:{
-            win:{
-                src: 'tools/*',
-                dest: dest + '/releases/updapp/win/updapp/'
+    grunt.registerTask('packageWin', function(){
+        var done = this.async();
+        var cmd = 'zip -r -X -j ' + dest + version_dir + '/win/MongoCMS.zip ' + path.resolve(dest + version_dir + '/win');
+        console.log(cmd);
+
+        exec(cmd, function(error, stdout, stderr){
+            if(stdout) console.log('stdout: ' + stdout);
+            if(stderr) console.log('stderr: ' + stderr);
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+            done();
+        });
+    });
+
+    grunt.registerTask('version', function(){
+        var ver = grunt.option('ver');
+        customizePackageJson({version: ver}, './app/package.json');
+
+        function customizePackageJson(obj, path){
+            var json = require(path);
+            for(var i in obj){
+                json[i] = obj[i];
             }
         }
+        fs.writeFileSync(path, JSON.stringify(json, null, 4));
+    });
 
-});
+    grunt.registerTask('test', function(){
+        alter_pkg({jose: 'rocks'});
+    });
 
-grunt.registerTask('packageMac', function(){
-    var done = this.async();
-    console.log('packaging...', 'hdiutil create -format UDZO -srcfolder ' + dest + '/releases/updapp/mac/updapp.app ' + dest + '/releases/updapp/mac/updapp.dmg');
+    grunt.registerTask('default', ['compass', 'jade', 'autoprefixer', 'browserify:dev', 'watch']);
 
-    exec('hdiutil create -format UDZO -srcfolder ' + dest + '/releases/updapp/mac/updapp.app ' + dest + '/releases/updapp/mac/updapp.dmg',function(error, stdout, stderr){
-      console.log('stdout: ' + stdout);
-      console.log('stderr: ' + stderr);
-      if (error !== null) {
-        console.log('exec error: ' + error);
-    }
-    done()
-    })
-})
+    var buildFlow = ['nodewebkit', 'packageMac', 'packageWin'];
+    if(isWin) buildFlow.push('copy:win');
 
-grunt.registerTask('version', function(){
-    var ver = grunt.option('ver');
-    customizePackageJson({version: ver}, './app/package.json');
+    grunt.registerTask('build', buildFlow);
 
-    function customizePackageJson(obj, path){
-      var json = require(path);
-      for(var i in obj){
-        json[i] = obj[i];
-    }
-    fs.writeFileSync(path, JSON.stringify(json, null, 4));
 }
-});
 
-grunt.registerTask('version', function(){
-    var ver = grunt.option('ver');
-    customizePackageJson({version: ver}, './app/package.json');
-
-    function customizePackageJson(obj, path){
-      var json = require(path);
-      for(var i in obj){
-        json[i] = obj[i];
-    }
-    fs.writeFileSync(path, JSON.stringify(json, null, 4));
-}
-});
-
-grunt.registerTask('default', ['compass', 'jade', 'autoprefixer', 'browserify:dev', 'watch']);
-// grunt.registerTask('build', ['nodewebkit']);
-
-var buildFlow = ['nodewebkit'];
-if(isWin) buildFlow.push('copy:win');
-
-grunt.registerTask('buildapp', buildFlow);
-};

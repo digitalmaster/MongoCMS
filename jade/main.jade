@@ -99,6 +99,8 @@ body(ontouchstart).clear.md-mode
                     input(type="password", name="psw")
 
                 button(class="btn center connect", type="submit") Connect
+                p(class="version")
+
             .select-collection-pane.hide
                 p.text-center.title.clear.flat-green(style="margin-bottom: 10px; font-weight: bold;") Conected!
                 select(name="collection", class="collection-list hide clear", style="width: 100%; margin: 10px 0;")
@@ -184,18 +186,8 @@ body(ontouchstart).clear.md-mode
 
     script.
         //- Catch all errors
-        process.on('uncaughtException', function(err) {
-
-        });
+        process.on('uncaughtException', function(err) {});
 
     script(src='js/bundle.js')
-    //- script(src='components/moment/moment.js')
-    //- script(src='components/nprogress/nprogress.js')
-    //- script(src='components/floatLabel/jquery.FloatLabel.js')
-    //- script(src='components/ace-builds/src-noconflict/ace.js')
-    //- script(src='components/keymaster/keymaster.js')
-    //- script(src='js/namespaces.js')
-
-    //- script(src='js/main.js')
 
 

@@ -87,6 +87,7 @@
           <input type="password" name="psw">
         </div>
         <button type="submit" class="btn center connect">Connect</button>
+        <p class="version"></p>
       </div>
       <div class="select-collection-pane hide">
         <p style="margin-bottom: 10px; font-weight: bold;" class="text-center title clear flat-green">Conected!</p>
@@ -163,9 +164,7 @@
   </script>
   <script>
     //- Catch all errors
-    process.on('uncaughtException', function(err) {
-    
-    });
+    process.on('uncaughtException', function(err) {});
     
   </script>
   <script src="js/bundle.js"></script>

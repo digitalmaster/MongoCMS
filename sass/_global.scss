@@ -590,11 +590,22 @@ blockquote {
     }
 
     // Connect form
-    form.connect{
-        .title{
-            margin: -10px;
-            background-color: $background-main;
-            padding: 10px;
+    form.connect {
+        .connect-pane {
+            position: relative;
+
+            .title {
+                margin: -10px;
+                background-color: $background-main;
+                padding: 10px;
+            }
+
+            .version {
+                position: absolute;
+                bottom: -70px;
+                right: 0px;
+            }
+
         }
     }
     textarea {
