@@ -1,6 +1,6 @@
 {
     "name": "MongoCMS",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Modern GUI for managing your mongodb content",
     "main": "main.html",
     "private": true,
