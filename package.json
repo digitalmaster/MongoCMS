@@ -1,19 +1,19 @@
 {
     "name": "MongoCMS",
-    "version": "0.0.4",
+    "version": "0.0.3",
     "description": "Modern GUI for managing your mongodb content",
     "main": "main.html",
     "private": true,
     "node-remote": "<local>",
     "no-edit-menu": true,
     "author": "Jose Browne <josebrowne@gmail.com>",
-    "manifestUrl": "http://localhost:8080/package.json",
+    "manifestUrl": "http://s395965318.onlinehome.us/mongocms/latest/package.json",
     "packages": {
         "mac": {
-            "url": "http://localhost:8080/latest/osx/MongoCMS.dmg"
+            "url": "http://s395965318.onlinehome.us/mongocms/latest/osx/MongoCMS.dmg"
         },
         "win": {
-            "url": "http://localhost:8080/latest/win/MongoCMS.zip"
+            "url": "http://s395965318.onlinehome.us/mongocms/latest/win/MongoCMS.zip"
         }
     },
     "window": {

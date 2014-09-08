@@ -171,20 +171,13 @@ module.exports = function (grunt) {
         });
     });
 
-    grunt.registerTask('cleanup', function(){
-        grunt.log.writeln('Restoring: package settings');
-        alter_pkg({ "window" : pkg["window"]});
-    });
-
-    grunt.registerTask('default', ['compass', 'jade', 'autoprefixer', 'browserify:dev', 'watch']);
-
-    grunt.registerTask('build', function(){
+    grunt.registerTask('pre-build', function(){
         grunt.log.writeln('Updating package settings for build.');
         alter_pkg({
             "window": {
                 "title": "MongoCMS",
                 "position": "center",
-                "toolbar": true,
+                "toolbar": false,
                 "frame": true,
                 "width": 1270,
                 "height": 800,
@@ -193,8 +186,19 @@ module.exports = function (grunt) {
                 "icon": "./icons/mcms.png"
             }
         });
+    });
 
-        grunt.task.run(['nodewebkit', 'packageMac', 'packageWin', 'cleanup']);
+    grunt.registerTask('cleanup', function(){
+        grunt.log.writeln('Restoring: package settings');
+        alter_pkg({ "window" : pkg["window"]});
+    });
+
+    grunt.registerTask('default', ['compass', 'jade', 'autoprefixer', 'browserify:dev', 'watch']);
+
+    grunt.registerTask('package', ['packageMac', 'packageWin']);
+
+    grunt.registerTask('build', function(){
+        grunt.task.run(['pre-build', 'nodewebkit', 'cleanup']);
     });
 }
 

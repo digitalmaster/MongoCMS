@@ -31,6 +31,7 @@ var helpers = {
     },
 
     initNativeKeyboardShortcuts: function() {
+        var gui = require('./gui');
         key.filter = function(){ return true } // Don't ignore input, textareas and selects
 
         // Copy
@@ -39,6 +40,11 @@ var helpers = {
         key('⌘+v, ctrl+v', function(){ document.execCommand("paste") } );
         // Cut
         key('⌘+x, ctrl+x', function(){ document.execCommand("cut") } );
+
+        // Dev Tools Shortcut
+        key('⌘+alt+j, ctrl+alt+j', function(){
+          gui.Window.get().showDevTools();
+        });
     },
 
     initRighClickMenu: function(){
