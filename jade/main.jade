@@ -1,7 +1,7 @@
 doctype html
 html
   head
-    title= 'MongoCMS v0.0.3'
+    title= 'MongoCMS v' + pkg.version
     meta(charset="UTF-8")
     meta(http-equiv="X-UA-Compatible", content="IE=edge,chrome=1")
 
@@ -39,7 +39,7 @@ body(ontouchstart).clear.md-mode
         #sidebar.column.animate
             //- Header
             .logo.pull-left.clear
-                <h2>MongoCMS <span>v0.0.3</span></h2>
+                <h2>MongoCMS <span>v#{pkg.version}</span></h2>
 
             ul.clear.documents
                 li
@@ -99,7 +99,7 @@ body(ontouchstart).clear.md-mode
                     input(type="password", name="psw")
 
                 button(class="btn center connect", type="submit") Connect
-                p(class="version")
+                p(class="version") v#{pkg.version}
 
             .select-collection-pane.hide
                 p.text-center.title.clear.flat-green(style="margin-bottom: 10px; font-weight: bold;") Conected!
@@ -107,6 +107,10 @@ body(ontouchstart).clear.md-mode
                     option Select Collection
                 a.show-connect.center.text-center.small(href="#")<i class="fa fa-bolt"></i> New Connection
     span.md-overlay-x.hide X
+
+    .notification-bar.hide
+        .message <b>Update Available:</b> <a href="#">Click here</a> to upgrade to the latest version of MongoCMS. Restart Required.
+            a(href="#").close-btn X
 
     script(type='text/template', id="startPageTemplate")
         p Documentation coming soon...

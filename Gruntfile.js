@@ -23,7 +23,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-compress');
     grunt.loadNpmTasks('grunt-contrib-copy');
 
-    pkg = grunt.file.readJSON('package.json')
+    pkg = grunt.file.readJSON('package.json');
     var dest = grunt.option('dest') || './builds';
     var version_dir = '/MongoCMS\\ -\\ v' + pkg.version;
 
@@ -75,7 +75,7 @@ module.exports = function (grunt) {
         browserify: {
             dev: {
                 files: { 'js/bundle.js': ['js/main.js'] },
-                options: { bundleOptions: { debug: true } }
+                options: { debug: true }
             }
 
         },
@@ -92,7 +92,12 @@ module.exports = function (grunt) {
         jade: {
             compile: {
                 options:{
-                    pretty: true
+                    pretty: true,
+                    data: function(dest, src) {
+                        return {
+                            pkg: pkg
+                        };
+                    }
                 },
 
                 files: {
@@ -128,6 +133,7 @@ module.exports = function (grunt) {
                 '!./node_modules/**/*',
                 './node_modules/mongodb/**/*',
                 './node_modules/mongojs/**/*',
+                './node_modules/request/**/*',
                 './node_modules/node-webkit-updater/**/*',
                 '!./components/ace-builds/**/*',
                 './components/ace-builds/src-noconflict/**/*'
@@ -137,14 +143,14 @@ module.exports = function (grunt) {
 
     grunt.registerTask('packageMac', function(){
         var done = this.async();
-        var cmd = 'hdiutil create -ov -format UDZO -srcfolder ' + dest + version_dir + '/osx/MongoCMS.app ' + dest + version_dir + '/osx/MongoCMS.dmg';
+        var cmd = 'hdiutil create -ov -size 200m -format UDZO -srcfolder ' + dest + version_dir + '/osx/MongoCMS.app ' + dest + version_dir + '/osx/MongoCMS.dmg';
         console.log(cmd);
 
         exec(cmd, function(error, stdout, stderr){
             if(stdout) console.log('stdout: ' + stdout);
             if(stderr) console.log('stderr: ' + stderr);
             if (error !== null) {
-                console.log('exec error: ' + error);
+                grunt.log.errorlns('exec error: ' + error);
             }
             done();
         });
@@ -159,35 +165,36 @@ module.exports = function (grunt) {
             if(stdout) console.log('stdout: ' + stdout);
             if(stderr) console.log('stderr: ' + stderr);
             if (error !== null) {
-                console.log('exec error: ' + error);
+                grunt.log.errorlns('exec error: ' + error);
             }
             done();
         });
     });
 
-    grunt.registerTask('version', function(){
-        var ver = grunt.option('ver');
-        customizePackageJson({version: ver}, './app/package.json');
-
-        function customizePackageJson(obj, path){
-            var json = require(path);
-            for(var i in obj){
-                json[i] = obj[i];
-            }
-        }
-        fs.writeFileSync(path, JSON.stringify(json, null, 4));
-    });
-
-    grunt.registerTask('test', function(){
-        alter_pkg({jose: 'rocks'});
+    grunt.registerTask('cleanup', function(){
+        grunt.log.writeln('Restoring: package settings');
+        alter_pkg({ "window" : pkg["window"]});
     });
 
     grunt.registerTask('default', ['compass', 'jade', 'autoprefixer', 'browserify:dev', 'watch']);
 
-    var buildFlow = ['nodewebkit', 'packageMac', 'packageWin'];
-    if(isWin) buildFlow.push('copy:win');
+    grunt.registerTask('build', function(){
+        grunt.log.writeln('Updating package settings for build.');
+        alter_pkg({
+            "window": {
+                "title": "MongoCMS",
+                "position": "center",
+                "toolbar": true,
+                "frame": true,
+                "width": 1270,
+                "height": 800,
+                "min_width": 400,
+                "min_height": 200,
+                "icon": "./icons/mcms.png"
+            }
+        });
 
-    grunt.registerTask('build', buildFlow);
-
+        grunt.task.run(['nodewebkit', 'packageMac', 'packageWin', 'cleanup']);
+    });
 }
 

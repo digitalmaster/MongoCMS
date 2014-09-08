@@ -1,6 +1,6 @@
 {
     "name": "MongoCMS",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Modern GUI for managing your mongodb content",
     "main": "main.html",
     "private": true,
@@ -10,10 +10,10 @@
     "manifestUrl": "http://localhost:8080/package.json",
     "packages": {
         "mac": {
-            "url": "http://localhost:8080/latest//mac/mongocms.zip"
+            "url": "http://localhost:8080/latest/osx/MongoCMS.dmg"
         },
         "win": {
-            "url": "http://localhost:8080/latest//win/mongocms.zip"
+            "url": "http://localhost:8080/latest/win/MongoCMS.zip"
         }
     },
     "window": {
@@ -29,25 +29,25 @@
     },
     "dependencies": {
         "mongodb": "~1",
-        "mongojs": "~0.14.0",
-        "node-webkit-updater": "~0.1.0"
+        "mongojs": "~0.14.1",
+        "node-webkit-updater": "~0.2.0"
     },
     "devDependencies": {
         "grunt": "~0.4.5",
         "grunt-develop": "~0.4.0",
-        "request": "~2.40.0",
+        "request": "~2.42.0",
         "grunt-contrib-watch": "~0.6.1",
         "grunt-contrib-sass": "~0.8.1",
         "grunt-contrib-concat": "~0.5.0",
         "grunt-contrib-uglify": "~0.5.1",
         "grunt-autoprefixer": "~1.0.1",
         "grunt-contrib-jade": "~0.12.0",
-        "grunt-contrib-compass": "~0.9.1",
-        "grunt-node-webkit-builder": "~0.2.2",
+        "grunt-contrib-compass": "~1.0.0",
+        "grunt-node-webkit-builder": "~0.2.3",
         "grunt-contrib-compress": "~0.11.0",
         "grunt-contrib-copy": "~0.5.0",
         "grunt-contrib-clean": "~0.6.0",
-        "grunt-browserify": "~2.1.4",
-        "browserify": "~5.10.1"
+        "grunt-browserify": "~3.0.1",
+        "browserify": "~5.11.1"
     }
 }
