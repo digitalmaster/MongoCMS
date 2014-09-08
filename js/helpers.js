@@ -1,4 +1,6 @@
-App.Helpers = {
+'use strict';
+
+var helpers = {
     Template: function(template){
       return _.template( $('#' + template).html() );
     },
@@ -29,6 +31,7 @@ App.Helpers = {
     },
 
     initNativeKeyboardShortcuts: function() {
+        var gui = require('./gui');
         key.filter = function(){ return true } // Don't ignore input, textareas and selects
 
         // Copy
@@ -37,13 +40,19 @@ App.Helpers = {
         key('⌘+v, ctrl+v', function(){ document.execCommand("paste") } );
         // Cut
         key('⌘+x, ctrl+x', function(){ document.execCommand("cut") } );
+
+        // Dev Tools Shortcut
+        key('⌘+alt+j, ctrl+alt+j', function(){
+          gui.Window.get().showDevTools();
+        });
     },
 
     initRighClickMenu: function(){
+        var gui = require('./gui');
+
         $(function() {
           function Menu(cutLabel, copyLabel, pasteLabel) {
-            var gui = require('nw.gui')
-              , menu = new gui.Menu()
+            var menu = new gui.Menu()
 
               , cut = new gui.MenuItem({
                 label: cutLabel || "Cut"
@@ -83,6 +92,8 @@ App.Helpers = {
     },
 
     renderAce: function(model){
+        var DocEditView = require('./views/docEdit');
+
         ace.config.set("basePath", "components/ace-builds/src-noconflict/");
         // Based on: https://gist.github.com/duncansmart/5267653
         $('textarea[data-editor]').each(function () {
@@ -132,7 +143,7 @@ App.Helpers = {
                 model.set({'_id': id}, {silent: true})
                 model.set( newObject );
 
-                App.Views.docEdit.render();
+                DocEditView.render();
             }
 
             // Show Raw JSON Model
@@ -170,7 +181,7 @@ App.Helpers = {
                     var attr = $(editor.container).next('textarea').data('key');
                     var val = editor.getSession().getValue();
 
-                    App.Views.docEdit.recordAttrChange(attr, val);
+                    DocEditView.recordAttrChange(attr, val);
                 });
             }
 
@@ -193,7 +204,7 @@ App.Helpers = {
     }
 };
 
-
+window.Helpers = helpers;
 /*
   ==========================================================================
     JS Native Enhancements
@@ -298,4 +309,3 @@ $.fn.isOnScreen = function(offsetBottom){
     return (!(viewport.right < bounds.left || viewport.left > bounds.right || viewport.bottom < bounds.top || viewport.top > bounds.bottom));
 
 };
-

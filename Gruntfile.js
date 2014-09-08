@@ -1,105 +1,204 @@
 'use strict';
 
+var exec = require('child_process').exec;
+var fs = require('fs');
 var request = require('request');
+var path = require('path');
+
+var isWin   = /^win/.test(process.platform);
+var isMac   = /^darwin/.test(process.platform);
+var isLinux = /^linux/.test(process.platform);
+var is32    = process.arch == 'ia32';
+var is64    = process.arch == 'x64';
+var pkg     = null;
 
 module.exports = function (grunt) {
+    grunt.loadNpmTasks('grunt-develop');
+    grunt.loadNpmTasks('grunt-browserify');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-compass');
+    grunt.loadNpmTasks('grunt-contrib-jade');
+    grunt.loadNpmTasks('grunt-autoprefixer');
+    grunt.loadNpmTasks('grunt-node-webkit-builder');
+    grunt.loadNpmTasks('grunt-contrib-compress');
+    grunt.loadNpmTasks('grunt-contrib-copy');
 
-  grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
+    pkg = grunt.file.readJSON('package.json');
+    var dest = grunt.option('dest') || './builds';
+    var version_dir = '/MongoCMS\\ -\\ v' + pkg.version;
 
-    watch: {
-        options: {
-            nospawn: true,
-            livereload: true
-        },
+    var alter_pkg = function(obj){
+        var path = './package.json'
+        var pkg = require(path);
+        for(var i in obj){
+            pkg[i] = obj[i];
+        }
+        fs.writeFileSync(path, JSON.stringify(pkg, null, 4));
+    }
 
-        js: {
-           files: ['js/*.js'],
-           tasks: ['develop']
-        },
-
-        sass: {
+    grunt.initConfig({
+        watch: {
             options: {
-              livereload: false
-            },
-            files: ['sass/*.{scss,sass}'],
-            tasks: ['compass'],
-        },
-
-        css: {
-            options: {
-                livereload: true,
                 nospawn: true,
-                interrupt: true
+                livereload: true
             },
-            tasks: ['compass', 'autoprefixer'],
-            files: ['css/main.css']
+
+            js: {
+                files: ['js/**/*.js'],
+                tasks: ['browserify:dev']
+            },
+
+            sass: {
+                options: {
+                    livereload: false
+                },
+                files: ['sass/*.{scss,sass}'],
+                tasks: ['compass'],
+            },
+
+            css: {
+                options: {
+                    livereload: true,
+                    nospawn: true,
+                    interrupt: true
+                },
+                tasks: ['compass', 'autoprefixer'],
+                files: ['css/main.css']
+            },
+
+            jade: {
+                files: ['jade/*.jade'],
+                tasks: 'jade'
+            }
+        },
+
+        browserify: {
+            dev: {
+                files: { 'js/bundle.js': ['js/main.js'] },
+                options: { debug: true }
+            }
+
+        },
+
+        compass: {
+            dist: {
+                options: {
+                    sassDir: 'sass',
+                    cssDir: 'css',
+                }
+            }
         },
 
         jade: {
-            files: ['jade/*.jade'],
-            tasks: 'jade'
-        }
-    },
+            compile: {
+                options:{
+                    pretty: true,
+                    data: function(dest, src) {
+                        return {
+                            pkg: pkg
+                        };
+                    }
+                },
 
-    compass: {
-        dist: {
-            options: {
-                sassDir: 'sass',
-                cssDir: 'css',
+                files: {
+                  'main.html': ['jade/main.jade']
+                },
+            },
+        },
+
+        autoprefixer: {
+            dist: {
+                files: {
+                    'css/main.css': 'css/main.css'
+                }
             }
-        }
-    },
-
-    jade: {
-      compile: {
-        options:{
-          pretty: true,
-          data: { test: 'test'}
         },
-        files: {
-          'main.html': ['jade/main.jade']
+
+        nodewebkit: {
+            options: {
+                version: '0.8.6',
+                build_dir: dest,
+                mac: true,
+                win: true,
+                linux32: false,
+                linux64: false,
+                macIcns: './icons/mcms.icns',
+                winIco: './icons/mcms.ico',
+                buildType: 'versioned',
+            },
+            src: [
+                './**/*',
+                '!./builds/**/*',
+                '!./cache/**/*',
+                '!./node_modules/**/*',
+                './node_modules/mongodb/**/*',
+                './node_modules/mongojs/**/*',
+                './node_modules/request/**/*',
+                './node_modules/node-webkit-updater/**/*',
+                '!./components/ace-builds/**/*',
+                './components/ace-builds/src-noconflict/**/*'
+            ]
         }
-      }
-    },
+    });
 
-    autoprefixer: {
-      dist: {
-        files: {
-            'css/main.css': 'css/main.css'
-        }
-      }
-    },
+    grunt.registerTask('packageMac', function(){
+        var done = this.async();
+        var cmd = 'hdiutil create -ov -size 200m -format UDZO -srcfolder ' + dest + version_dir + '/osx/MongoCMS.app ' + dest + version_dir + '/osx/MongoCMS.dmg';
+        console.log(cmd);
 
-    nodewebkit: {
-        options: {
-            build_dir: './builds',
-            mac: true,
-            win: true,
-            linux32: false,
-            linux64: false,
-            mac_icns: './icons/mcms.icns',
-        },
-        src: [
-            './**/*',
-            '!./builds/**/*',
-            '!./node_modules/**/*',
-            './node_modules/mongodb/**/*',
-            './node_modules/mongojs/**/*',
-            '!./components/ace-builds/**/*',
-            './components/ace-builds/src-noconflict/**/*'
-        ]
-    }
+        exec(cmd, function(error, stdout, stderr){
+            if(stdout) console.log('stdout: ' + stdout);
+            if(stderr) console.log('stderr: ' + stderr);
+            if (error !== null) {
+                grunt.log.errorlns('exec error: ' + error);
+            }
+            done();
+        });
+    });
 
-  });
+    grunt.registerTask('packageWin', function(){
+        var done = this.async();
+        var cmd = 'zip -r -X -j ' + dest + version_dir + '/win/MongoCMS.zip ' + path.resolve(dest + version_dir + '/win');
+        console.log(cmd);
 
-  grunt.loadNpmTasks('grunt-develop');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-compass');
-  grunt.loadNpmTasks('grunt-contrib-jade');
-  grunt.loadNpmTasks('grunt-autoprefixer');
-  grunt.loadNpmTasks('grunt-node-webkit-builder');
+        exec(cmd, function(error, stdout, stderr){
+            if(stdout) console.log('stdout: ' + stdout);
+            if(stderr) console.log('stderr: ' + stderr);
+            if (error !== null) {
+                grunt.log.errorlns('exec error: ' + error);
+            }
+            done();
+        });
+    });
 
-  grunt.registerTask('default', ['compass', 'jade', 'autoprefixer', 'watch']);
-  grunt.registerTask('build', ['nodewebkit']);
-};
+    grunt.registerTask('pre-build', function(){
+        grunt.log.writeln('Updating package settings for build.');
+        alter_pkg({
+            "window": {
+                "title": "MongoCMS",
+                "position": "center",
+                "toolbar": false,
+                "frame": true,
+                "width": 1270,
+                "height": 800,
+                "min_width": 400,
+                "min_height": 200,
+                "icon": "./icons/mcms.png"
+            }
+        });
+    });
+
+    grunt.registerTask('cleanup', function(){
+        grunt.log.writeln('Restoring: package settings');
+        alter_pkg({ "window" : pkg["window"]});
+    });
+
+    grunt.registerTask('default', ['compass', 'jade', 'autoprefixer', 'browserify:dev', 'watch']);
+
+    grunt.registerTask('package', ['packageMac', 'packageWin']);
+
+    grunt.registerTask('build', function(){
+        grunt.task.run(['pre-build', 'nodewebkit', 'cleanup']);
+    });
+}
+

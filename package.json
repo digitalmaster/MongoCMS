@@ -1,37 +1,53 @@
 {
-  "name": "MongoCMS",
-  "version": "0.0.3",
-  "description": "Modern GUI for managing your mongodb content",
-  "main": "main.html",
-  "private": true,
-  "node-remote": "<local>",
-  "no-edit-menu": true,
-  "window": {
-    "title": "MongoCMS",
-    "position": "center",
-    "toolbar": false,
-    "frame": true,
-    "width": 1270,
-    "height": 800,
-    "min_width": 400,
-    "min_height": 200,
-    "icon": "./icons/mcms.png"
-  },
-  "dependencies": {
-    "mongodb": "~1",
-    "mongojs": "~0.13.0"
-  },
-  "devDependencies": {
-    "grunt": "~0.4.5",
-    "grunt-develop": "~0.4.0",
-    "request": "~2.36.0",
-    "grunt-contrib-watch": "~0.6.1",
-    "grunt-contrib-sass": "~0.7.3",
-    "grunt-contrib-concat": "~0.4.0",
-    "grunt-contrib-uglify": "~0.5.0",
-    "grunt-autoprefixer": "~0.8.1",
-    "grunt-contrib-jade": "~0.12.0",
-    "grunt-contrib-compass": "~0.9.0",
-    "grunt-node-webkit-builder": "~0.1.21"
-  }
+    "name": "MongoCMS",
+    "version": "0.0.4",
+    "description": "Modern GUI for managing your mongodb content",
+    "main": "main.html",
+    "private": true,
+    "node-remote": "<local>",
+    "no-edit-menu": true,
+    "author": "Jose Browne <josebrowne@gmail.com>",
+    "manifestUrl": "http://s395965318.onlinehome.us/mongocms/latest/package.json",
+    "packages": {
+        "mac": {
+            "url": "http://s395965318.onlinehome.us/mongocms/latest/osx/MongoCMS.dmg"
+        },
+        "win": {
+            "url": "http://s395965318.onlinehome.us/mongocms/latest/win/MongoCMS.zip"
+        }
+    },
+    "window": {
+        "title": "MongoCMS",
+        "position": "center",
+        "toolbar": true,
+        "frame": true,
+        "width": 1270,
+        "height": 800,
+        "min_width": 400,
+        "min_height": 200,
+        "icon": "./icons/mcms.png"
+    },
+    "dependencies": {
+        "mongodb": "~1",
+        "mongojs": "~0.14.1",
+        "node-webkit-updater": "~0.2.0"
+    },
+    "devDependencies": {
+        "grunt": "~0.4.5",
+        "grunt-develop": "~0.4.0",
+        "request": "~2.42.0",
+        "grunt-contrib-watch": "~0.6.1",
+        "grunt-contrib-sass": "~0.8.1",
+        "grunt-contrib-concat": "~0.5.0",
+        "grunt-contrib-uglify": "~0.5.1",
+        "grunt-autoprefixer": "~1.0.1",
+        "grunt-contrib-jade": "~0.12.0",
+        "grunt-contrib-compass": "~1.0.0",
+        "grunt-node-webkit-builder": "~0.2.3",
+        "grunt-contrib-compress": "~0.11.0",
+        "grunt-contrib-copy": "~0.5.0",
+        "grunt-contrib-clean": "~0.6.0",
+        "grunt-browserify": "~3.0.1",
+        "browserify": "~5.11.1"
+    }
 }
