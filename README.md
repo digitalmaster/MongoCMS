@@ -1,5 +1,5 @@
-## Synopsis
-
+## Project no longer maintained
+-------
 MongoCMS is just a very simple content editor for MongoDB collections. It makes manging rich content types very simple, clean and elegant. 
 ![](https://raw.github.com/digitalmaster/MongoCMS/master/img/screenshots/doc-edit-2.png)
 ## Motivation
